@@ -25,11 +25,11 @@ function init(track: HTMLElement, hero: HTMLElement) {
   const ctx = canvas.getContext('2d')!;
   const sctx = sparkCanvas.getContext('2d')!;
 
-  const CLEAN_AT = 0.45; // parte de la pantalla frotada para terminar
-  const SWIPES = 1.9; // o recorrido equivalente a este número de pantallas de ancho: 2 o 3 deslizadas
+  const CLEAN_AT = 0.3; // parte de la pantalla frotada para terminar
+  const SWIPES = 1.25; // o recorrido equivalente a este número de pantallas de ancho: 1 o 2 deslizadas
   const COLS = 26;
   const ROWS = 15;
-  const WIPE_END = 0.55; // parte del tramo de scroll que limpia sola
+  const WIPE_END = 0.35; // parte del tramo de scroll que limpia sola
 
   let w = 0;
   let h = 0;
@@ -346,7 +346,7 @@ function init(track: HTMLElement, hero: HTMLElement) {
   let autoLast = 0;
 
   function applyStage() {
-    stage.style.transform = `translate(${stagePx}px, ${stagePy}px) scale(${1.012 + cam * 0.62})`;
+    stage.style.transform = `translate(${stagePx}px, ${stagePy}px) scale(${1.012 + cam * 0.4})`;
   }
 
   function autoWipe(p: number) {
@@ -386,7 +386,8 @@ function init(track: HTMLElement, hero: HTMLElement) {
     applyStage();
     copy.style.opacity = String(Math.max(1 - eased * 1.9, 0));
     copy.style.transform = `translateY(${eased * -60}px)`;
-    dissolve.style.opacity = String(Math.max((eased - 0.45) / 0.55, 0));
+    // Solo un tinte: el formulario ya viene subiendo, no hace falta llenar la pantalla de color.
+    dissolve.style.opacity = String(Math.max((eased - 0.3) / 0.7, 0) * 0.55);
   }
   window.addEventListener('scroll', () => {
     if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }

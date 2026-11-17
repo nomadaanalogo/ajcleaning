@@ -48,8 +48,10 @@ const es = lang === 'es';
 
 <style>
   .hero-track { position: relative; height: 100svh; }
-  :global(.js) .hero-track { height: 175svh; }
-  @media (prefers-reduced-motion: reduce) { :global(.js) .hero-track { height: 100svh; } }
+  /* Tramo corto de scroll: limpia, la cámara entra y el formulario sube como una hoja por encima. */
+  :global(.js) .hero-track { height: 145svh; margin-bottom: -28svh; }
+  :global(.js) .hero-track + :global(.quote) { padding-top: clamp(44px, 6vw, 72px); border-radius: 36px 36px 0 0; box-shadow: 0 -24px 50px -30px rgb(15 58 61 / 0.45); }
+  @media (prefers-reduced-motion: reduce) { :global(.js) .hero-track { height: 100svh; margin-bottom: 0; } }
 
   .hero { position: sticky; top: 0; height: 100svh; min-height: 600px; overflow: hidden; background: #fbf5eb; isolation: isolate; touch-action: pan-y; }
   .stage { position: absolute; inset: 0; z-index: -3; transform-origin: 78% 46%; will-change: transform; }
