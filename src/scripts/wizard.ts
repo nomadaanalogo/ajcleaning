@@ -1,12 +1,13 @@
 /** Solicitud de cotización: pasos, validación y envío a la hoja de Google Drive. */
 type Map = Record<string, string>;
+type Lists = { property: Map; size: Map; frequency: Map; kind: Map; extras: Map };
 type Config = {
   endpoint: string;
   lang: 'en' | 'es';
   zona: string;
   whatsappBase: string;
-  sheet: { property: Map; service: Map; frequency: Map };
-  labels: { property: Map; service: Map; frequency: Map };
+  sheet: Lists & { regular: string };
+  labels: Lists;
   strings: Map;
 };
 
@@ -26,15 +27,33 @@ function init(form: HTMLFormElement, cfg: Config) {
 
   const val = (name: string) => form.querySelector<HTMLInputElement>(`[name="${name}"]:checked`)?.value ?? '';
   const text = (name: string) => form.querySelector<HTMLInputElement>(`[name="${name}"]`)?.value.trim() ?? '';
-  const isRecurring = () => val('service') === 'recurring';
+  const checked = (name: string) => $$<HTMLInputElement>(`[name="${name}"]:checked`).map((i) => i.value);
+  const isOnce = () => val('frequency') === 'once';
+  const isOffice = () => val('property') === 'office';
 
-  /* ---------- Resumen ---------- */
+  /* ---------- Textos de resumen (para el panel, WhatsApp y la hoja) ---------- */
+  function sizeText(l: Lists) {
+    const parts = [l.size[val('size')]];
+    if (!isOffice() && val('bedrooms')) parts.push(`${val('bedrooms')} ${S.beds}`);
+    if (val('bathrooms')) parts.push(`${val('bathrooms')} ${S.baths}`);
+    return parts.filter(Boolean).join(' · ');
+  }
+  function planText(l: Lists) {
+    const f = l.frequency[val('frequency')] ?? '';
+    return isOnce() && val('kind') ? `${f} · ${l.kind[val('kind')]}` : f;
+  }
+  const extrasText = (l: Lists) => checked('extras').map((x) => l.extras[x]).join(', ');
+
   function render() {
-    $('[data-s-property]').textContent = cfg.labels.property[val('property')] ?? '—';
-    $('[data-s-service]').textContent = cfg.labels.service[val('service')] ?? '—';
-    $('[data-s-frequency]').textContent = cfg.labels.frequency[val('frequency')] ?? '';
-    $('[data-s-frequency-row]').hidden = !isRecurring();
-    $('[data-freq]').hidden = !isRecurring();
+    $('[data-s="property"]').textContent = cfg.labels.property[val('property')] ?? '—';
+    $('[data-s="size"]').textContent = sizeText(cfg.labels) || '—';
+    $('[data-s="plan"]').textContent = planText(cfg.labels) || '—';
+    const extras = extrasText(cfg.labels);
+    $('[data-s="extras"]').textContent = extras;
+    $('[data-s-row="extras"]').hidden = !extras;
+    // Las oficinas no tienen habitaciones; el tipo de limpieza solo se pregunta para una sola visita.
+    $('[data-beds]').hidden = isOffice();
+    $('[data-kind]').hidden = !isOnce();
   }
 
   /* ---------- Pasos ---------- */
@@ -56,22 +75,33 @@ function init(form: HTMLFormElement, cfg: Config) {
     }
   }
 
-  function next() {
-    if (current === 0 && !val('property')) {
-      $('[data-err-group="property"]').hidden = false;
-      return;
-    }
-    show(current + 1);
+  /** Revisa las preguntas obligatorias visibles del paso; marca las que faltan. */
+  function stepValid(step: HTMLElement) {
+    let firstBad: HTMLElement | null = null;
+    step.querySelectorAll<HTMLElement>('[data-req]').forEach((group) => {
+      const name = group.dataset.req!;
+      const missing = !group.closest('[hidden]') && !val(name);
+      const err = step.querySelector<HTMLElement>(`[data-err="${name}"]`);
+      if (err) err.hidden = !missing;
+      if (missing && !firstBad) firstBad = group;
+    });
+    if (firstBad) (firstBad as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return !firstBad;
   }
 
-  form.addEventListener('change', () => {
+  function next() {
+    if (stepValid(steps[current])) show(current + 1);
+  }
+
+  form.addEventListener('change', (e) => {
     render();
-    if (val('property')) $('[data-err-group="property"]').hidden = true;
+    const name = (e.target as HTMLInputElement).name;
+    const err = section.querySelector<HTMLElement>(`[data-err="${name}"]`);
+    if (err && val(name)) err.hidden = true;
   });
 
-  // Tocar una tarjeta avanza, aunque ya estuviera marcada. Se escucha en la tarjeta y no en
+  // Tocar una propiedad avanza, aunque ya estuviera marcada. Se escucha en la tarjeta y no en
   // el radio para que moverse con las flechas del teclado no cambie de paso.
-  // "Recurrente" no avanza sola porque primero se elige la frecuencia.
   $$<HTMLElement>('.card[data-auto]').forEach((card) => {
     card.addEventListener('click', (e) => {
       if ((e.target as HTMLElement).tagName === 'INPUT') return;
@@ -87,8 +117,8 @@ function init(form: HTMLFormElement, cfg: Config) {
     field.querySelector<HTMLElement>('.err')!.hidden = true;
   });
 
-  /* ---------- Validación ---------- */
-  function validate() {
+  /* ---------- Validación de los datos ---------- */
+  function validateContact() {
     let firstBad: HTMLInputElement | null = null;
     for (const el of $$<HTMLInputElement>('.field input')) {
       const value = el.value.trim();
@@ -109,16 +139,19 @@ function init(form: HTMLFormElement, cfg: Config) {
 
   /* ---------- Envío ---------- */
   function whatsappFallback() {
+    const l = cfg.labels;
     const lines = [
       S.waMsg,
       '',
       `${S.wName}: ${text('name')}`,
       `Email: ${text('email')}`,
       `${S.wAddress}: ${text('address')}`,
-      `${S.wProperty}: ${cfg.labels.property[val('property')] ?? ''}`,
-      `${S.wService}: ${cfg.labels.service[val('service')] ?? ''}`,
+      `${S.wProperty}: ${l.property[val('property')] ?? ''}`,
+      `${S.wSize}: ${sizeText(l)}`,
+      `${S.wFrequency}: ${planText(l)}`,
     ];
-    if (isRecurring()) lines.push(`${S.wFrequency}: ${cfg.labels.frequency[val('frequency')] ?? ''}`);
+    const extras = extrasText(l);
+    if (extras) lines.push(`${S.wExtras}: ${extras}`);
     return cfg.whatsappBase + encodeURIComponent(lines.join('\n'));
   }
 
@@ -134,11 +167,15 @@ function init(form: HTMLFormElement, cfg: Config) {
     e.preventDefault();
     if (submit.disabled) return;
     $('[data-fail]').hidden = true;
-    if (!val('property')) { show(0); next(); return; }
-    if (!validate()) return;
+    // Si falta algo de un paso anterior, se vuelve a ese paso.
+    for (let i = 0; i < steps.length - 1; i++) {
+      if (!stepValid(steps[i])) { show(i); stepValid(steps[i]); return; }
+    }
+    if (!validateContact()) return;
 
     if (!cfg.endpoint) { showFailure(); return; }
 
+    const sh = cfg.sheet;
     submit.disabled = true;
     submit.textContent = S.sending;
     try {
@@ -150,9 +187,13 @@ function init(form: HTMLFormElement, cfg: Config) {
           nombre: text('name'),
           correo: text('email'),
           direccion: text('address'),
-          propiedad: cfg.sheet.property[val('property')] ?? '',
-          servicio: cfg.sheet.service[val('service')] ?? '',
-          frecuencia: isRecurring() ? cfg.sheet.frequency[val('frequency')] ?? '' : '',
+          propiedad: sh.property[val('property')] ?? '',
+          tamano: sh.size[val('size')] ?? '',
+          habitaciones: isOffice() ? '' : val('bedrooms'),
+          banos: val('bathrooms'),
+          frecuencia: sh.frequency[val('frequency')] ?? '',
+          servicio: isOnce() ? sh.kind[val('kind')] ?? '' : sh.regular,
+          extras: extrasText(sh),
           zona: cfg.zona,
           idioma: cfg.lang,
           pagina: location.pathname,
@@ -164,7 +205,7 @@ function init(form: HTMLFormElement, cfg: Config) {
       if (!result?.ok) throw new Error('rejected');
 
       const gtag = (window as unknown as { gtag?: (...a: unknown[]) => void }).gtag;
-      gtag?.('event', 'generate_lead', { service: val('service'), frequency: isRecurring() ? val('frequency') : 'none' });
+      gtag?.('event', 'generate_lead', { frequency: val('frequency'), kind: isOnce() ? val('kind') : 'regular' });
 
       $('[data-done-name]').textContent = text('name').split(' ')[0];
       $('[data-flow]').hidden = true;

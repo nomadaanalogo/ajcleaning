@@ -28,8 +28,12 @@ const HEADERS = [
   "Correo",
   "Dirección",
   "Propiedad",
-  "Servicio",
+  "Tamaño",
+  "Habitaciones",
+  "Baños",
   "Frecuencia",
+  "Tipo de limpieza",
+  "Extras",
   "Zona",
   "Idioma",
   "Página",
@@ -49,7 +53,7 @@ function doPost(e) {
     // 1. Campo trampa: si viene lleno es un bot. Respondemos ok para no darle pistas.
     if (data.website) return jsonResponse({ ok: true });
 
-    // 2. Trampa de tiempo: una persona tarda varios segundos en responder 3 pasos.
+    // 2. Trampa de tiempo: una persona tarda varios segundos en responder 4 pasos.
     if (!(Number(data.elapsed) >= CONFIG.MIN_FILL_MS)) return jsonResponse({ ok: true });
 
     // 3. Límite global por hora, para frenar ataques masivos.
@@ -60,8 +64,12 @@ function doPost(e) {
       correo: cleanLine(data.correo, 160).toLowerCase(),
       direccion: cleanLine(data.direccion, 200),
       propiedad: cleanLine(data.propiedad, 60),
-      servicio: cleanLine(data.servicio, 80),
+      tamano: cleanLine(data.tamano, 40),
+      habitaciones: cleanLine(data.habitaciones, 4),
+      banos: cleanLine(data.banos, 4),
       frecuencia: cleanLine(data.frecuencia, 40),
+      servicio: cleanLine(data.servicio, 80),
+      extras: cleanLine(data.extras, 160),
       zona: cleanLine(data.zona, 60),
       idioma: data.idioma === "es" ? "es" : "en",
       pagina: cleanLine(data.pagina, 200),
@@ -126,12 +134,12 @@ function getSheet() {
       .setFontColor("#ffffff");
     sheet.setFrozenRows(1);
     sheet.setColumnWidth(4, 300);
-    sheet.setColumnWidth(12, 300);
+    sheet.setColumnWidth(16, 300);
     // Lista desplegable para el seguimiento.
     const rule = SpreadsheetApp.newDataValidation()
       .requireValueInList(["Nuevo", "Contactado", "Cotizado", "Reservado", "Recurrente", "Perdido"], true)
       .build();
-    sheet.getRange(2, 11, sheet.getMaxRows() - 1, 1).setDataValidation(rule);
+    sheet.getRange(2, 15, sheet.getMaxRows() - 1, 1).setDataValidation(rule);
   }
   return sheet;
 }
@@ -143,8 +151,12 @@ function saveLead(lead) {
     safeCell(lead.correo),
     safeCell(lead.direccion),
     safeCell(lead.propiedad),
-    safeCell(lead.servicio),
+    safeCell(lead.tamano),
+    safeCell(lead.habitaciones),
+    safeCell(lead.banos),
     safeCell(lead.frecuencia),
+    safeCell(lead.servicio),
+    safeCell(lead.extras),
     safeCell(lead.zona),
     lead.idioma,
     safeCell(lead.pagina),
@@ -174,8 +186,9 @@ function sendAutoReply(lead) {
         <p style="margin:0 0 8px;font-size:16px;line-height:1.5;">${escapeHtml(lines[1])}</p>
         <p style="margin:0 0 22px;font-size:16px;line-height:1.5;">${escapeHtml(lines[2])}</p>
         ${summaryRow(es ? "Propiedad" : "Property", lead.propiedad)}
-        ${summaryRow(es ? "Servicio" : "Service", lead.servicio)}
-        ${summaryRow(es ? "Frecuencia" : "Frequency", lead.frecuencia)}
+        ${summaryRow(es ? "Tamaño" : "Size", lead.tamano)}
+        ${summaryRow(es ? "Frecuencia" : "How often", lead.frecuencia)}
+        ${summaryRow(es ? "Extras" : "Extras", lead.extras)}
         ${summaryRow(es ? "Dirección" : "Address", lead.direccion)}
       </div>
     </div>
@@ -203,8 +216,12 @@ function notifyBusiness(lead) {
     ${summaryRow("Correo", lead.correo)}
     ${summaryRow("Dirección", lead.direccion)}
     ${summaryRow("Propiedad", lead.propiedad)}
-    ${summaryRow("Servicio", lead.servicio)}
+    ${summaryRow("Tamaño", lead.tamano)}
+    ${summaryRow("Habitaciones", lead.habitaciones)}
+    ${summaryRow("Baños", lead.banos)}
     ${summaryRow("Frecuencia", lead.frecuencia)}
+    ${summaryRow("Tipo de limpieza", lead.servicio)}
+    ${summaryRow("Extras", lead.extras)}
     ${summaryRow("Zona", lead.zona)}
     <p style="margin:24px 0 0;">
       <a href="${sheetUrl}" style="display:inline-block;background:#17595c;color:#fff;text-decoration:none;font-weight:bold;padding:12px 20px;border-radius:999px;">Abrir la hoja</a>
@@ -216,7 +233,8 @@ function notifyBusiness(lead) {
     subject: `Nueva solicitud: ${lead.nombre}`,
     body:
       `Nueva solicitud de ${lead.nombre}\nCorreo: ${lead.correo}\nDirección: ${lead.direccion}\n` +
-      `Propiedad: ${lead.propiedad}\nServicio: ${lead.servicio}\nFrecuencia: ${lead.frecuencia}\n\nHoja: ${sheetUrl}`,
+      `Propiedad: ${lead.propiedad}\nTamaño: ${lead.tamano}\nHabitaciones: ${lead.habitaciones} · Baños: ${lead.banos}\n` +
+      `Frecuencia: ${lead.frecuencia}\nTipo de limpieza: ${lead.servicio}\nExtras: ${lead.extras}\n\nHoja: ${sheetUrl}`,
     htmlBody: html,
     name: `${CONFIG.BUSINESS_NAME} · Web`,
     replyTo: lead.correo,
@@ -282,8 +300,12 @@ function probarFormulario() {
         correo: destino,
         direccion: "123 Test St, Miami, FL 33101",
         propiedad: "Casa",
-        servicio: "Limpieza recurrente",
-        frecuencia: "Semanal",
+        tamano: "1,500 – 2,000 pies²",
+        habitaciones: "3",
+        banos: "2",
+        frecuencia: "Cada 2 semanas",
+        servicio: "Limpieza regular",
+        extras: "Ventanas",
         zona: "",
         idioma: "es",
         pagina: "/prueba/",

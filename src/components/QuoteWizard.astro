@@ -1,6 +1,7 @@
 ---
 /**
- * Solicitud de cotización en 3 pasos: propiedad, servicio y datos.
+ * Solicitud de cotización en 4 pasos, una pregunta por paso:
+ *   1. Propiedad · 2. Tamaño · 3. Cada cuánto (y extras) · 4. Datos de contacto.
  * Es un formulario real: src/scripts/wizard.ts le pone los pasos y lo envía a la hoja de Drive.
  * No muestra precios: el negocio los envía después de revisar cada solicitud.
  */
@@ -8,7 +9,6 @@ import Icon from './Icon.astro';
 import { ui, routes, type Lang } from '../data/i18n';
 import { whatsappUrl } from '../data/site';
 import { areas } from '../data/areas';
-import { plans } from '../data/plans';
 import type { IconName } from '../data/icons';
 
 interface Props {
@@ -19,6 +19,7 @@ interface Props {
 const { lang, title, preset = {} } = Astro.props;
 const es = lang === 'es';
 const c = ui.common;
+type T = { en: string; es: string };
 
 const properties: { id: keyof typeof ui.property; icon: IconName }[] = [
   { id: 'house', icon: 'house' },
@@ -27,19 +28,47 @@ const properties: { id: keyof typeof ui.property; icon: IconName }[] = [
   { id: 'office', icon: 'office' },
   { id: 'listing', icon: 'sign' },
 ];
-const serviceOptions: { id: keyof typeof ui.serviceType; icon: IconName }[] = [
-  { id: 'recurring', icon: 'calendar' },
-  { id: 'once', icon: 'house' },
-  { id: 'deep', icon: 'sparkle' },
-  { id: 'move', icon: 'box' },
-  { id: 'construction', icon: 'helmet' },
-  { id: 'laundry', icon: 'laundry' },
-  { id: 'addons', icon: 'window' },
+
+const sizes: { id: string; t: T }[] = [
+  { id: 'lt1000', t: { en: 'Under 1,000', es: 'Menos de 1,000' } },
+  { id: '1000', t: { en: '1,000 – 1,500', es: '1,000 – 1,500' } },
+  { id: '1500', t: { en: '1,500 – 2,000', es: '1,500 – 2,000' } },
+  { id: '2000', t: { en: '2,000 – 2,500', es: '2,000 – 2,500' } },
+  { id: '2500', t: { en: '2,500 – 3,500', es: '2,500 – 3,500' } },
+  { id: '3500', t: { en: 'Over 3,500', es: 'Más de 3,500' } },
+  { id: 'unsure', t: { en: 'Not sure', es: 'No sé' } },
 ];
-const recurringPlans = plans.filter((p) => p.id !== 'once');
-const defaultService = preset.service ?? 'recurring';
-const totalSteps = 3;
+const bedrooms = ['1', '2', '3', '4', '5+'];
+const bathrooms = ['1', '1.5', '2', '2.5', '3', '4+'];
+
+const frequencies: { id: string; t: T; hint: T; best?: boolean }[] = [
+  { id: 'weekly', t: ui.frequency.weekly, hint: { en: 'Always ready', es: 'Siempre lista' }, best: true },
+  { id: 'biweekly', t: ui.frequency.biweekly, hint: { en: 'Clean, twice a month', es: 'Limpia, dos veces al mes' } },
+  { id: 'triweekly', t: ui.frequency.triweekly, hint: { en: 'A lighter schedule', es: 'Un ritmo más suave' } },
+];
+const once: T = { en: 'Just once', es: 'Solo una vez' };
+const kinds: { id: string; t: T }[] = [
+  { id: 'standard', t: { en: 'Standard', es: 'Estándar' } },
+  { id: 'deep', t: ui.serviceType.deep },
+  { id: 'move', t: ui.serviceType.move },
+  { id: 'construction', t: ui.serviceType.construction },
+];
+const extras: { id: string; t: T }[] = [
+  { id: 'laundry', t: { en: 'Laundry', es: 'Lavandería' } },
+  { id: 'windows', t: { en: 'Windows', es: 'Ventanas' } },
+  { id: 'carpets', t: { en: 'Carpets', es: 'Alfombras' } },
+  { id: 'appliances', t: { en: 'Inside fridge & oven', es: 'Nevera y horno por dentro' } },
+];
+
+/* Las páginas de servicio llegan con el formulario ya orientado. */
+const presetKind = ['deep', 'move', 'construction'].includes(preset.service ?? '') ? preset.service : undefined;
+const presetFrequency = presetKind ? 'once' : undefined;
+const presetExtra = preset.service === 'laundry' ? 'laundry' : undefined;
 const zona = areas.find((a) => a.id === preset.city)?.name ?? '';
+
+const pick = <X extends { id: string; t: T }>(list: X[], l: Lang) => Object.fromEntries(list.map((x) => [x.id, x.t[l]]));
+const freqAll = [...frequencies, { id: 'once', t: once }];
+const sqft = es ? 'pies²' : 'sq ft';
 
 /* La hoja de seguimiento siempre queda en español, sin importar el idioma del visitante. */
 const config = {
@@ -49,29 +78,40 @@ const config = {
   whatsappBase: whatsappUrl(''),
   sheet: {
     property: Object.fromEntries(properties.map((p) => [p.id, ui.property[p.id].es])),
-    service: Object.fromEntries(serviceOptions.map((s) => [s.id, ui.serviceType[s.id].es])),
-    frequency: Object.fromEntries(recurringPlans.map((p) => [p.id, ui.frequency[p.id].es])),
+    size: Object.fromEntries(sizes.map((s) => [s.id, s.id === 'unsure' ? 'No sabe' : `${s.t.es} pies²`])),
+    frequency: pick(freqAll, 'es'),
+    kind: pick(kinds, 'es'),
+    extras: pick(extras, 'es'),
+    regular: 'Limpieza regular',
   },
   labels: {
     property: Object.fromEntries(properties.map((p) => [p.id, ui.property[p.id][lang]])),
-    service: Object.fromEntries(serviceOptions.map((s) => [s.id, ui.serviceType[s.id][lang]])),
-    frequency: Object.fromEntries(recurringPlans.map((p) => [p.id, ui.frequency[p.id][lang]])),
+    size: Object.fromEntries(sizes.map((s) => [s.id, s.id === 'unsure' ? s.t[lang] : `${s.t[lang]} ${sqft}`])),
+    frequency: pick(freqAll, lang),
+    kind: pick(kinds, lang),
+    extras: pick(extras, lang),
   },
   strings: {
     stepOf: es ? 'Paso {n} de {t}' : 'Step {n} of {t}',
-    empty: es ? 'Elige una opción' : 'Choose an option',
     send: es ? 'Pedir mi cotización' : 'Request my quote',
     sending: es ? 'Enviando...' : 'Sending...',
     required: es ? 'Falta este dato.' : 'We need this one.',
     badEmail: es ? 'Revisa tu correo.' : 'Check your email.',
+    beds: es ? 'hab.' : 'bed',
+    baths: es ? 'baños' : 'bath',
+    none: es ? 'Ninguno' : 'None',
     waMsg: es ? '¡Hola AJ Cleaning Home! Quiero una cotización.' : 'Hi AJ Cleaning Home! I would like a quote.',
     wName: es ? 'Nombre' : 'Name',
     wAddress: es ? 'Dirección' : 'Address',
     wProperty: es ? 'Propiedad' : 'Property',
-    wService: es ? 'Servicio' : 'Service',
-    wFrequency: es ? 'Frecuencia' : 'Frequency',
+    wSize: es ? 'Tamaño' : 'Size',
+    wFrequency: es ? 'Frecuencia' : 'How often',
+    wKind: es ? 'Tipo de limpieza' : 'Type of cleaning',
+    wExtras: es ? 'Extras' : 'Extras',
   },
 };
+
+const next = es ? 'Continuar' : 'Continue';
 ---
 <section class="quote" id="quote">
   <div class="wrap head" data-up>
@@ -82,16 +122,16 @@ const config = {
   <div class="wrap layout">
     <form class="wizard" data-wizard novalidate>
       <div class="flow" data-flow>
-        <div class="progress" aria-hidden="true"><i data-progress style={`transform:scaleX(${1 / totalSteps})`}></i></div>
-        <p class="count" data-count aria-live="polite">{config.strings.stepOf.replace('{n}', '1').replace('{t}', String(totalSteps))}</p>
+        <div class="progress" aria-hidden="true"><i data-progress style="transform:scaleX(0.25)"></i></div>
+        <p class="count" data-count aria-live="polite">{config.strings.stepOf.replace('{n}', '1').replace('{t}', '4')}</p>
 
         <!-- 1. Propiedad -->
         <fieldset class="step is-on" data-step="property">
-          <legend>{es ? '¿Para qué propiedad es?' : 'What kind of property?'}</legend>
-          <div class="cards cards--five">
+          <legend>{es ? '¿Qué vamos a limpiar?' : 'What are we cleaning?'}</legend>
+          <div class="cards cards--five" data-req="property">
             {properties.map((p) => (
               <label class="card" data-auto>
-                <input type="radio" name="property" value={p.id} checked={preset.property === p.id} required />
+                <input type="radio" name="property" value={p.id} checked={preset.property === p.id} />
                 <span class="card-in">
                   <Icon name={p.icon} class="ic" />
                   <b>{ui.property[p.id][lang]}</b>
@@ -100,44 +140,102 @@ const config = {
               </label>
             ))}
           </div>
-          <p class="err" data-err-group="property" role="alert" hidden>{config.strings.empty}</p>
-          <div class="nav nav--card"><button type="button" class="btn btn--primary" data-next>{es ? 'Continuar' : 'Continue'} <Icon name="arrow" /></button></div>
+          <p class="err" data-err="property" role="alert" hidden>{es ? 'Elige una opción.' : 'Choose one.'}</p>
+          <div class="nav"><button type="button" class="btn btn--primary" data-next>{next} <Icon name="arrow" /></button></div>
         </fieldset>
 
-        <!-- 2. Servicio: lo recurrente va primero y recomendado -->
-        <fieldset class="step" data-step="service">
-          <legend>{es ? '¿Qué servicio deseas?' : 'What service do you need?'}</legend>
-          <div class="cards cards--services">
-            {serviceOptions.map((s) => (
-              <label class:list={['card', { 'card--top': s.id === 'recurring' }]} data-auto={s.id !== 'recurring' ? '' : undefined}>
-                <input type="radio" name="service" value={s.id} checked={defaultService === s.id} />
-                <span class="card-in">
-                  {s.id === 'recurring' && <em class="badge"><Icon name="star" /> {es ? 'Recomendado · mejor tarifa por visita' : 'Recommended · best rate per visit'}</em>}
-                  <Icon name={s.icon} class="ic" />
-                  <b>{ui.serviceType[s.id][lang]}</b>
-                  <small>{ui.serviceTypeHint[s.id][lang]}</small>
-                </span>
-              </label>
-            ))}
-            <div class="freq" data-freq>
-              <p id="freq-label">{es ? '¿Cada cuánto vamos?' : 'How often should we come?'}</p>
-              <div class="chips" role="group" aria-labelledby="freq-label">
-                {recurringPlans.map((p, i) => (
-                  <label class="chip-opt">
-                    <input type="radio" name="frequency" value={p.id} checked={i === 0} />
-                    <span>{ui.frequency[p.id][lang]}</span>
-                  </label>
-                ))}
-              </div>
-              <div class="freq-next"><button type="button" class="btn btn--primary" data-next>{es ? 'Continuar' : 'Continue'} <Icon name="arrow" /></button></div>
+        <!-- 2. Tamaño -->
+        <fieldset class="step" data-step="size">
+          <legend>{es ? '¿Qué tan grande es?' : 'How big is it?'}</legend>
+          <p class="lead">{es ? 'Aproximado está bien. Así cotizamos justo.' : 'A rough idea is fine. It keeps your quote accurate.'}</p>
+
+          <div class="group" data-req="size">
+            <p class="q" id="q-size">{es ? 'Pies cuadrados' : 'Square feet'}</p>
+            <div class="chips" role="radiogroup" aria-labelledby="q-size">
+              {sizes.map((s) => (
+                <label class="chip-opt"><input type="radio" name="size" value={s.id} /><span>{s.t[lang]}</span></label>
+              ))}
+            </div>
+            <p class="err" data-err="size" role="alert" hidden>{config.strings.required}</p>
+          </div>
+
+          <div class="group" data-req="bedrooms" data-beds>
+            <p class="q" id="q-beds">{es ? 'Habitaciones' : 'Bedrooms'}</p>
+            <div class="chips chips--num" role="radiogroup" aria-labelledby="q-beds">
+              {bedrooms.map((n) => (
+                <label class="chip-opt"><input type="radio" name="bedrooms" value={n} /><span>{n}</span></label>
+              ))}
+            </div>
+            <p class="err" data-err="bedrooms" role="alert" hidden>{config.strings.required}</p>
+          </div>
+
+          <div class="group" data-req="bathrooms">
+            <p class="q" id="q-baths">{es ? 'Baños' : 'Bathrooms'}</p>
+            <div class="chips chips--num" role="radiogroup" aria-labelledby="q-baths">
+              {bathrooms.map((n) => (
+                <label class="chip-opt"><input type="radio" name="bathrooms" value={n} /><span>{n}</span></label>
+              ))}
+            </div>
+            <p class="err" data-err="bathrooms" role="alert" hidden>{config.strings.required}</p>
+          </div>
+
+          <div class="nav"><button type="button" class="btn btn--primary" data-next>{next} <Icon name="arrow" /></button></div>
+        </fieldset>
+
+        <!-- 3. Frecuencia: los planes regulares van primero -->
+        <fieldset class="step" data-step="plan">
+          <legend>{es ? '¿Cada cuánto vamos?' : 'How often should we come?'}</legend>
+
+          <div data-req="frequency">
+            <p class="q q--save"><Icon name="calendar" /> {es ? 'Limpieza regular: menor precio por visita' : 'Regular cleaning: lower price per visit'}</p>
+            <div class="cards cards--three">
+              {frequencies.map((f) => (
+                <label class="card">
+                  <input type="radio" name="frequency" value={f.id} />
+                  <span class="card-in">
+                    {f.best && <em class="badge"><Icon name="star" /> {es ? 'Mejor tarifa' : 'Best rate'}</em>}
+                    <b>{f.t[lang]}</b>
+                    <small>{f.hint[lang]}</small>
+                  </span>
+                </label>
+              ))}
+            </div>
+            <p class="or"><span>{es ? 'o' : 'or'}</span></p>
+            <label class="card card--once">
+              <input type="radio" name="frequency" value="once" checked={presetFrequency === 'once'} />
+              <span class="card-in">
+                <b>{once[lang]}</b>
+                <small>{es ? 'Una visita, sin plan' : 'One visit, no plan'}</small>
+              </span>
+            </label>
+            <p class="err" data-err="frequency" role="alert" hidden>{es ? 'Elige una opción.' : 'Choose one.'}</p>
+          </div>
+
+          <div class="group" data-req="kind" data-kind hidden>
+            <p class="q" id="q-kind">{es ? '¿Qué tipo de limpieza?' : 'What type of cleaning?'}</p>
+            <div class="chips" role="radiogroup" aria-labelledby="q-kind">
+              {kinds.map((k) => (
+                <label class="chip-opt"><input type="radio" name="kind" value={k.id} checked={presetKind === k.id} /><span>{k.t[lang]}</span></label>
+              ))}
+            </div>
+            <p class="err" data-err="kind" role="alert" hidden>{config.strings.required}</p>
+          </div>
+
+          <div class="group">
+            <p class="q" id="q-extras">{es ? '¿Algo extra?' : 'Anything extra?'} <span class="opt">{es ? 'Opcional' : 'Optional'}</span></p>
+            <div class="chips" role="group" aria-labelledby="q-extras">
+              {extras.map((x) => (
+                <label class="chip-opt chip-opt--check"><input type="checkbox" name="extras" value={x.id} checked={presetExtra === x.id} /><span><Icon name="plus" /> {x.t[lang]}</span></label>
+              ))}
             </div>
           </div>
-          <div class="nav nav--card"><button type="button" class="btn btn--primary" data-next>{es ? 'Continuar' : 'Continue'} <Icon name="arrow" /></button></div>
+
+          <div class="nav"><button type="button" class="btn btn--primary" data-next>{next} <Icon name="arrow" /></button></div>
         </fieldset>
 
-        <!-- 3. Datos -->
+        <!-- 4. Datos -->
         <fieldset class="step" data-step="contact">
-          <legend>{es ? '¿A dónde te enviamos la cotización?' : 'Where should we send your quote?'}</legend>
+          <legend>{es ? '¿A dónde enviamos tu cotización?' : 'Where do we send your quote?'}</legend>
           <div class="fields">
             <label class="field"><span>{es ? 'Tu nombre' : 'Your name'}</span><input type="text" name="name" autocomplete="name" maxlength="80" required /><small class="err" hidden></small></label>
             <label class="field"><span>{es ? 'Tu correo' : 'Your email'}</span><input type="email" name="email" autocomplete="email" inputmode="email" maxlength="160" required /><small class="err" hidden></small></label>
@@ -175,9 +273,10 @@ const config = {
     <aside class="side" aria-label={es ? 'Tu solicitud' : 'Your request'}>
       <p class="s-label">{es ? 'Tu solicitud' : 'Your request'}</p>
       <dl class="s-list">
-        <div><dt>{es ? 'Propiedad' : 'Property'}</dt><dd data-s-property>—</dd></div>
-        <div><dt>{es ? 'Servicio' : 'Service'}</dt><dd data-s-service>{ui.serviceType.recurring[lang]}</dd></div>
-        <div data-s-frequency-row><dt>{es ? 'Frecuencia' : 'Frequency'}</dt><dd data-s-frequency>{ui.frequency.weekly[lang]}</dd></div>
+        <div><dt>{es ? 'Propiedad' : 'Property'}</dt><dd data-s="property">—</dd></div>
+        <div><dt>{es ? 'Tamaño' : 'Size'}</dt><dd data-s="size">—</dd></div>
+        <div><dt>{es ? 'Frecuencia' : 'How often'}</dt><dd data-s="plan">—</dd></div>
+        <div data-s-row="extras" hidden><dt>{es ? 'Extras' : 'Extras'}</dt><dd data-s="extras"></dd></div>
       </dl>
       <p class="s-label s-next">{es ? 'Qué sigue' : 'What’s next'}</p>
       <ol class="s-steps">
@@ -208,50 +307,58 @@ const config = {
   fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
   legend { padding: 0; margin-bottom: 20px; font-family: var(--display); font-weight: 600; font-size: clamp(2rem, 3.6vw, 3rem); line-height: 1; letter-spacing: -0.01em; }
   legend:focus { outline: 0; }
+  .lead { margin: -8px 0 22px; color: var(--ink-soft); font-size: 1.02rem; }
   /* Sin JS se ven todos los pasos; con JS, uno a la vez */
   .step + .step { margin-top: 36px; }
   :global(.js) .step { display: none; margin-top: 0; }
   :global(.js) .step.is-on { display: block; animation: stepIn 0.5s var(--ease); }
   @keyframes stepIn { from { opacity: 0; transform: translateX(24px); } }
 
-  input[type='radio'] { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  input[type='radio'], input[type='checkbox'] { position: absolute; opacity: 0; width: 1px; height: 1px; }
+
+  /* Preguntas dentro de un paso */
+  .group { margin-top: 22px; }
+  .group:first-of-type { margin-top: 0; }
+  .group[hidden] { display: none; }
+  .q { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-weight: 600; font-size: 1.02rem; }
+  .q--save { color: var(--sea-700); }
+  .q--save :global(svg) { width: 20px; height: 20px; }
+  .opt { font-weight: 400; font-size: 0.88rem; color: var(--ink-soft); }
 
   .cards { display: grid; gap: 12px; }
   .cards--five { grid-template-columns: repeat(6, 1fr); }
   .cards--five .card { grid-column: span 2; }
   .cards--five .card:nth-child(n + 4) { grid-column: span 3; }
-  .cards--services { grid-template-columns: repeat(3, 1fr); }
-  .card { position: relative; cursor: pointer; }
-  .card-in { display: grid; gap: 4px; align-content: start; height: 100%; padding: 18px; background: #fff; border: 1.5px solid var(--line); border-radius: 20px; transition: transform 0.25s var(--ease), border-color 0.2s, background 0.2s, box-shadow 0.2s; }
+  .cards--three { grid-template-columns: repeat(3, 1fr); }
+  .card { position: relative; display: block; cursor: pointer; }
+  .card-in { position: relative; display: grid; gap: 4px; align-content: start; height: 100%; padding: 18px; background: #fff; border: 1.5px solid var(--line); border-radius: 20px; transition: transform 0.25s var(--ease), border-color 0.2s, background 0.2s, box-shadow 0.2s; }
   .card-in b { font-size: 1.1rem; font-weight: 600; line-height: 1.2; }
   .card-in small { color: var(--ink-soft); font-size: 0.93rem; line-height: 1.3; }
   .card-in :global(.ic) { width: 32px; height: 32px; margin-bottom: 8px; color: var(--sea-700); }
   .card:hover .card-in { transform: translateY(-3px); border-color: var(--sea-700); box-shadow: 0 16px 28px -22px rgb(19 74 77 / 0.7); }
   .card input:checked + .card-in { background: var(--sea-100); border-color: var(--sea-700); box-shadow: inset 0 0 0 1.5px var(--sea-700); }
+  /* Marca de selección: deja claro que las tarjetas se eligen */
+  .card-in::after { content: ''; position: absolute; top: 14px; right: 14px; width: 22px; height: 22px; border: 1.5px solid var(--line); border-radius: 50%; background: #fff; }
+  .card input:checked + .card-in::after { border-color: var(--sea-700); background: var(--sea-700) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 14px no-repeat; }
   input:focus-visible + .card-in, input:focus-visible + span { outline: 3px solid var(--sea-700); outline-offset: 2px; }
-  .card--top { grid-column: 1 / -1; }
-  .card--top .card-in { padding: 22px; background: var(--sea-50); }
-  .card--top b { font-size: 1.35rem; }
-  .badge { justify-self: start; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 10px; padding: 5px 12px; background: var(--sea-700); color: #fff; border-radius: 99px; font-style: normal; font-size: 0.82rem; font-weight: 600; line-height: 1.2; }
-  .badge :global(.star) { width: 11px; height: 11px; fill: #f2d49c; flex: none; }
+  .cards--three .card-in { padding-top: 16px; min-height: 112px; }
+  .badge { justify-self: start; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 6px; padding: 3px 10px; background: var(--sea-700); color: #fff; border-radius: 99px; font-style: normal; font-size: 0.78rem; font-weight: 600; line-height: 1.3; }
+  .badge :global(.star) { width: 10px; height: 10px; fill: #f2d49c; flex: none; }
+  .card--once .card-in { grid-template-columns: auto 1fr; align-items: baseline; column-gap: 12px; padding-block: 16px; padding-right: 52px; }
 
-  .cards--services .card { order: 3; }
-  .cards--services .card--top { order: 1; }
-  .freq { order: 2; grid-column: 1 / -1; padding: 16px 18px; background: var(--sea-50); border-radius: 18px; }
-  .freq-next { display: flex; justify-content: flex-end; margin-top: 14px; }
-  /* Con "recurrente" el botón va junto a la frecuencia */
-  .step:has(input[value='recurring']:checked) .nav--card { display: none; }
-  .freq[hidden] { display: none; }
-  .freq p { font-weight: 600; margin-bottom: 10px; }
+  .or { display: flex; align-items: center; gap: 12px; margin: 14px 0; color: var(--ink-soft); font-size: 0.9rem; }
+  .or::before, .or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip-opt { position: relative; cursor: pointer; }
-  .chip-opt span { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 18px; background: #fff; border: 1.5px solid var(--line); border-radius: 999px; font-weight: 600; transition: border-color 0.2s, background 0.2s, color 0.2s; }
+  .chip-opt span { display: inline-flex; align-items: center; gap: 6px; min-height: 46px; padding: 8px 18px; background: #fff; border: 1.5px solid var(--line); border-radius: 999px; font-weight: 600; transition: border-color 0.2s, background 0.2s, color 0.2s; }
+  .chips--num .chip-opt span { justify-content: center; min-width: 56px; padding-inline: 12px; }
   .chip-opt:hover span { border-color: var(--sea-700); }
   .chip-opt input:checked + span { background: var(--sea-700); border-color: var(--sea-700); color: #fff; }
+  .chip-opt--check span :global(svg) { width: 16px; height: 16px; transition: transform 0.2s; }
+  .chip-opt--check input:checked + span :global(svg) { transform: rotate(45deg); }
 
-  .nav { display: flex; justify-content: flex-end; margin-top: 24px; }
-  .nav--card { display: none; }
-  .step:has(input:checked) .nav--card { display: flex; }
+  .nav { display: flex; justify-content: flex-end; margin-top: 26px; }
   .tip { margin-top: 14px; font-size: 0.95rem; color: var(--ink-soft); }
 
   .fields { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
@@ -262,6 +369,7 @@ const config = {
   .field.is-bad input { border-color: #b4412d; }
   .err { color: #a23a27; font-weight: 600; font-size: 0.9rem; }
   p.err { margin-top: 10px; }
+  .err[hidden] { display: none; }
   .trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
   .btn--send { width: 100%; min-height: 60px; font-size: 1.08rem; }
   .btn--send[disabled] { opacity: 0.7; cursor: progress; transform: none; }
@@ -289,8 +397,9 @@ const config = {
   .s-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--sea-200); }
   .s-next { margin-top: 22px; padding-top: 18px; border-top: 1px solid rgb(255 255 255 / 0.16); }
   .s-list { margin: 12px 0 0; display: grid; gap: 10px; }
+  .s-list [hidden] { display: none; }
   .s-list dt { font-size: 0.86rem; color: var(--sea-200); }
-  .s-list dd { margin: 0; font-family: var(--display); font-weight: 600; font-size: 1.5rem; line-height: 1.1; }
+  .s-list dd { margin: 0; font-family: var(--display); font-weight: 600; font-size: 1.4rem; line-height: 1.15; }
   .s-steps { margin-top: 12px; display: grid; gap: 8px; counter-reset: s; }
   .s-steps li { display: flex; gap: 10px; align-items: baseline; counter-increment: s; line-height: 1.3; }
   .s-steps li::before { content: counter(s); flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #f2d49c; color: var(--ink); font-size: 0.82rem; font-weight: 700; }
@@ -300,9 +409,11 @@ const config = {
     .side { position: static; }
   }
   @media (max-width: 620px) {
-    .cards--five, .cards--services { grid-template-columns: repeat(2, 1fr); }
+    .cards--five { grid-template-columns: repeat(2, 1fr); }
     .cards--five .card, .cards--five .card:nth-child(n + 4) { grid-column: auto; }
     .cards--five .card:last-child { grid-column: 1 / -1; }
+    .cards--three { grid-template-columns: 1fr; gap: 8px; }
+    .cards--three .card-in { min-height: 0; grid-template-columns: 1fr; padding-block: 14px; }
     .card-in { padding: 15px; }
     .fields { grid-template-columns: 1fr; }
     .chip-opt span { padding-inline: 14px; }
