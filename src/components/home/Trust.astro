@@ -1,0 +1,103 @@
+---
+/** Para quién y por qué confiar. Solo usa datos que confirmó el negocio. */
+import Icon from '../Icon.astro';
+import { services, serviceUrl } from '../../data/services';
+import { site } from '../../data/site';
+import type { Lang } from '../../data/i18n';
+import type { IconName } from '../../data/icons';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const es = lang === 'es';
+const by = (id: string) => services.find((s) => s.id === id)!;
+
+const audiences: { icon: IconName; h: string; p: string; href: string; link: string }[] = [
+  {
+    icon: 'family',
+    h: es ? 'Familias' : 'Families',
+    p: es ? 'Niños, mascotas y poco tiempo. Tu semana ya está llena. Limpiar ya no va en ella.' : 'Kids, pets, no time. Your week is full. Cleaning is off the list.',
+    href: serviceUrl(by('recurring'), lang),
+    link: es ? 'Planes recurrentes' : 'Recurring plans',
+  },
+  {
+    icon: 'sign',
+    h: 'Realtors',
+    p: es ? 'Propiedades listas para fotos, visitas y entrega de llaves.' : 'Listings ready for photos, showings and handing over the keys.',
+    href: serviceUrl(by('realtor'), lang),
+    link: es ? 'Limpieza para realtors' : 'Realtor cleaning',
+  },
+  {
+    icon: 'office',
+    h: es ? 'Oficinas' : 'Offices',
+    p: es ? 'Un espacio limpio cada semana. Tú sigues trabajando.' : 'A clean workplace every week. You keep working.',
+    href: serviceUrl(by('office'), lang),
+    link: es ? 'Limpieza de oficinas' : 'Office cleaning',
+  },
+];
+
+const facts: { icon: IconName; n: string; l: string }[] = [
+  { icon: 'clock', n: `${site.yearsInBusiness} ${es ? 'años' : 'years'}`, l: es ? 'limpiando en Florida' : 'cleaning in Florida' },
+  { icon: 'people', n: es ? '2 personas' : '2 people', l: es ? 'Las mismas en tu casa' : 'The same faces in your home' },
+  { icon: 'bottle', n: es ? 'Tú eliges' : 'You choose', l: es ? 'Nuestros productos o los tuyos' : 'Our products or yours' },
+  { icon: 'card', n: 'Zelle', l: es ? 'o transferencia directa' : 'or direct transfer' },
+];
+
+const stepsList = es
+  ? [['Pide tu cotización', 'Tres pasos, aquí mismo.'], ['Aparta tu cupo', 'Te enviamos el precio. Reservas con el 25%.'], ['Vuelve a casa', 'Limpia. Y así se queda.']]
+  : [['Request your quote', 'Three steps, right here.'], ['Hold your spot', 'We send your price. You book with 25%.'], ['Come home', 'Clean. And it stays that way.']];
+---
+<section class="trust section">
+  <div class="wrap">
+    <div class="who">
+      <div class="who-head" data-up>
+        <p class="kicker"><Icon name="star" /> {es ? 'Para quién' : 'Who we clean for'}</p>
+        <h2 class="h2">{es ? 'Tu espacio. Tu ritmo.' : 'Your space. Your rhythm.'}</h2>
+      </div>
+      <ul class="aud">
+        {audiences.map((a) => (
+          <li data-up>
+            <a href={a.href}>
+              <Icon name={a.icon} class="ic" />
+              <h3>{a.h}</h3>
+              <p>{a.p}</p>
+              <span>{a.link} <Icon name="arrow" /></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <ol class="steps" data-up>
+      {stepsList.map(([h, p], i) => (
+        <li><span class="sn">{i + 1}</span><div><h3>{h}</h3><p>{p}</p></div></li>
+      ))}
+    </ol>
+
+    <ul class="facts" data-up>
+      {facts.map((f) => <li><Icon name={f.icon} /><b>{f.n}</b><span>{f.l}</span></li>)}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .trust { background: var(--cream); }
+  h2 { margin-top: 12px; }
+  .aud { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 32px; }
+  .aud a { display: flex; flex-direction: column; height: 100%; padding: 28px; background: var(--sea-50); border-radius: var(--radius); text-decoration: none; transition: transform 0.4s var(--ease), background 0.3s; }
+  .aud a:hover { transform: translateY(-5px); background: var(--sea-100); }
+  .aud :global(.ic) { width: 42px; height: 42px; color: var(--sea-700); }
+  .aud h3 { margin-top: 18px; font-family: var(--display); font-size: 2.3rem; line-height: 1; }
+  .aud p { margin: 10px 0 18px; color: var(--ink-soft); }
+  .aud span { margin-top: auto; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: var(--sea-700); }
+  .aud span :global(svg) { width: 17px; height: 17px; }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: clamp(40px, 6vw, 72px); padding-block: 28px; border-block: 1px solid var(--line); }
+  .steps li { display: flex; gap: 14px; }
+  .sn { display: grid; place-items: center; width: 42px; height: 42px; flex: none; border-radius: 50%; background: var(--sea-900); color: #fff; font-weight: 600; }
+  .steps h3 { font-size: 1.15rem; line-height: 1.25; }
+  .steps p { color: var(--ink-soft); font-size: 0.98rem; }
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 32px; }
+  .facts li { display: grid; gap: 2px; }
+  .facts :global(svg) { width: 26px; height: 26px; color: var(--gold); margin-bottom: 6px; }
+  .facts b { font-family: var(--display); font-size: 1.9rem; line-height: 1.05; font-weight: 600; font-variant-numeric: lining-nums; }
+  .facts span { color: var(--ink-soft); font-size: 0.97rem; }
+  @media (max-width: 860px) { .aud, .steps { grid-template-columns: 1fr; } .facts { grid-template-columns: 1fr 1fr; } }
+</style>

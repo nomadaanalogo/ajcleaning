@@ -1,0 +1,69 @@
+---
+/**
+ * Borrador basado en lo que el negocio confirmó. PENDIENTE: revisión de un abogado en Florida.
+ * No incluye política de cancelación, reembolso del depósito ni garantía porque no están definidas.
+ */
+import Base from '../layouts/Base.astro';
+import Crumbs from '../components/Crumbs.astro';
+import { site } from '../data/site';
+import { ui, routes, type Lang } from '../data/i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const es = lang === 'es';
+
+const sections: { h: string; p: string[] }[] = es
+  ? [
+      { h: 'Quiénes somos', p: [`${site.name} presta servicios de limpieza en Florida. Al usar este sitio o contratar un servicio, aceptas estos términos.`] },
+      { h: 'Solicitudes y cotizaciones', p: ['Enviar el formulario es una solicitud, no una reserva. Te enviaremos una cotización según la propiedad y el servicio.', 'El servicio queda confirmado cuando aceptas la cotización y pagas el depósito.'] },
+      { h: 'Depósito y pagos', p: ['Para reservar se paga el 25% antes del día del servicio.', 'Aceptamos Zelle o transferencia directa. Este sitio no procesa pagos.'] },
+      { h: 'Programación y cancelaciones', p: ['Trabajamos de lunes a viernes, de 8 am a 5 pm, y el horario puede adaptarse. Los servicios se reservan con anticipación.', 'Los cambios y cancelaciones se acuerdan al confirmar tu reserva.'] },
+      { h: 'Alcance del servicio', p: ['La cotización indica qué incluye tu servicio. Los extras se acuerdan aparte.', 'No lavamos platos sucios, para cuidar tus pertenencias y evitar inconvenientes.'] },
+      { h: 'Productos', p: ['Podemos llevar nuestros productos o usar los tuyos. Avísanos sobre alergias, mascotas, superficies delicadas o cualquier preferencia antes del servicio.'] },
+      { h: 'Acceso a la propiedad', p: ['Debes darnos acceso seguro en la fecha acordada y tener autorización para contratar el servicio en esa propiedad.'] },
+      { h: 'Contenido del sitio', p: ['La información de este sitio es general y puede cambiar. Las fotos son ilustrativas y no siempre corresponden a trabajos nuestros.', 'Los textos, el logo y el diseño pertenecen a sus titulares. No los copies sin permiso.'] },
+      { h: 'Ley aplicable', p: ['Estos términos se rigen por las leyes del estado de Florida, Estados Unidos.'] },
+      { h: 'Cambios y contacto', p: ['Podemos actualizar estos términos; la versión vigente es la publicada aquí. Si tienes preguntas, escríbenos por WhatsApp.'] },
+    ]
+  : [
+      { h: 'Who we are', p: [`${site.name} provides cleaning services in Florida. By using this site or booking a service, you accept these terms.`] },
+      { h: 'Requests and quotes', p: ['Sending the form is a request, not a booking. We will send you a quote based on the property and service.', 'Your service is confirmed once you accept the quote and pay the deposit.'] },
+      { h: 'Deposit and payments', p: ['A 25% deposit is due before the service day to book.', 'We accept Zelle or direct bank transfer. This site does not process payments.'] },
+      { h: 'Scheduling and cancellations', p: ['We work Monday to Friday, 8 am to 5 pm, and the schedule can adapt. Services are booked ahead of time.', 'Changes and cancellations are agreed when your booking is confirmed.'] },
+      { h: 'Scope of service', p: ['Your quote states what your service includes. Add-ons are agreed separately.', 'We do not wash dirty dishes, to protect your belongings and avoid any issue.'] },
+      { h: 'Products', p: ['We can bring our products or use yours. Tell us about allergies, pets, delicate surfaces or any preference before the service.'] },
+      { h: 'Access to the property', p: ['You must give us safe access on the agreed date and be authorized to book the service at that property.'] },
+      { h: 'Site content', p: ['Information on this site is general and may change. Photos are illustrative and do not always show our own work.', 'Text, logo and design belong to their owners. Do not copy them without permission.'] },
+      { h: 'Governing law', p: ['These terms are governed by the laws of the State of Florida, United States.'] },
+      { h: 'Changes and contact', p: ['We may update these terms; the current version is the one published here. Questions? Message us on WhatsApp.'] },
+    ];
+---
+<Base
+  lang={lang}
+  alt={routes.terms[es ? 'en' : 'es']}
+  title={es ? 'Términos y condiciones | AJ Cleaning Home' : 'Terms and Conditions | AJ Cleaning Home'}
+  description={es ? 'Condiciones para usar este sitio, pedir una cotización y contratar los servicios de limpieza de AJ Cleaning Home.' : 'Terms for using this site, requesting a quote and booking cleaning services with AJ Cleaning Home.'}
+>
+  <section class="page-hero">
+    <div class="wrap">
+      <Crumbs label="Breadcrumb" items={[{ name: ui.nav.home[lang], href: routes.home[lang] }, { name: es ? 'Términos' : 'Terms' }]} />
+      <h1>{es ? 'Términos y condiciones' : 'Terms and conditions'}</h1>
+    </div>
+  </section>
+  <section class="section">
+    <div class="wrap body">
+      {sections.map((s) => (
+        <>
+          <h2>{s.h}</h2>
+          {s.p.map((t) => <p>{t}</p>)}
+        </>
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .body { max-width: 720px; }
+  h2 { margin-top: 28px; font-family: var(--display); font-size: 1.9rem; line-height: 1.1; }
+  h2:first-child { margin-top: 0; }
+  p { margin-top: 8px; color: var(--ink-soft); }
+</style>

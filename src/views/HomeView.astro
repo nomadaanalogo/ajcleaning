@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/home/Hero.astro';
+import QuoteWizard from '../components/QuoteWizard.astro';
+import Recurring from '../components/home/Recurring.astro';
+import ServicesRail from '../components/home/ServicesRail.astro';
+import Rooms from '../components/home/Rooms.astro';
+import Trust from '../components/home/Trust.astro';
+import AreasMap from '../components/AreasMap.astro';
+import Faq from '../components/Faq.astro';
+import FinalCta from '../components/home/FinalCta.astro';
+import { faqs, faqSchema } from '../data/faq';
+import { routes, type Lang } from '../data/i18n';
+import { site } from '../data/site';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const es = lang === 'es';
+const website = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: site.name,
+  url: new URL(routes.home[lang], Astro.site).toString(),
+  inLanguage: lang,
+  publisher: { '@id': `${Astro.site}#business` },
+};
+---
+<Base
+  lang={lang}
+  overlayHeader
+  alt={routes.home[es ? 'en' : 'es']}
+  title={es ? 'Limpieza de casas en Miami y Fort Lauderdale | AJ Cleaning Home' : 'House Cleaning in Miami & Fort Lauderdale | AJ Cleaning Home'}
+  description={es
+    ? 'Limpieza de casas semanal, quincenal o de una vez en el sur de Florida. Casas, Airbnb, oficinas y propiedades. Pide tu cotización gratis.'
+    : 'Weekly, biweekly or one-time house cleaning across South Florida. Homes, Airbnbs, offices and listings. Get your free quote.'}
+  jsonLd={[website, faqSchema(faqs, lang)]}
+>
+  <Hero lang={lang} />
+  <QuoteWizard lang={lang} />
+  <Recurring lang={lang} />
+  <ServicesRail lang={lang} />
+  <Rooms lang={lang} />
+  <Trust lang={lang} />
+  <AreasMap lang={lang} />
+  <Faq lang={lang} items={faqs} id="faq" />
+  <FinalCta lang={lang} />
+</Base>
+
+<script>
+  import '../scripts/home';
+</script>

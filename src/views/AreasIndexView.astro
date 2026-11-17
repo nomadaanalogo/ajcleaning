@@ -1,0 +1,60 @@
+---
+import Base from '../layouts/Base.astro';
+import Crumbs from '../components/Crumbs.astro';
+import Icon from '../components/Icon.astro';
+import AreasMap from '../components/AreasMap.astro';
+import { areas, areaUrl } from '../data/areas';
+import { breadcrumbs } from '../lib/schema';
+import { ui, routes, quoteHref, type Lang } from '../data/i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const es = lang === 'es';
+---
+<Base
+  lang={lang}
+  alt={routes.areas[es ? 'en' : 'es']}
+  title={es ? 'Zonas de servicio en Miami-Dade y Broward | AJ Cleaning Home' : 'Service Areas in Miami-Dade & Broward | AJ Cleaning Home'}
+  description={es
+    ? 'Limpiamos en Fort Lauderdale, Hollywood, Aventura, North Miami, Miami Beach, Brickell, Coconut Grove, Miami Lakes, Hialeah Gardens, Kendall y Homestead.'
+    : 'We clean in Fort Lauderdale, Hollywood, Aventura, North Miami, Miami Beach, Brickell, Coconut Grove, Miami Lakes, Hialeah Gardens, Kendall and Homestead.'}
+  jsonLd={[breadcrumbs(Astro.site, [{ name: ui.nav.home[lang], href: routes.home[lang] }, { name: ui.nav.areas[lang], href: routes.areas[lang] }])]}
+>
+  <section class="page-hero">
+    <div class="wrap">
+      <Crumbs label="Breadcrumb" items={[{ name: ui.nav.home[lang], href: routes.home[lang] }, { name: ui.nav.areas[lang] }]} />
+      <h1>{es ? 'Dónde limpiamos' : 'Where we clean'}</h1>
+      <p class="lead">{es ? 'Miami-Dade, Broward y el resto de Florida.' : 'Miami-Dade, Broward and the rest of Florida.'}</p>
+      <a class="btn btn--primary" href={quoteHref(lang)} data-track="cta_click">{ui.common.getQuote[lang]} <Icon name="arrow" /></a>
+    </div>
+  </section>
+
+  <AreasMap lang={lang} heading={false} />
+
+  <section class="section">
+    <ul class="wrap list">
+      {areas.map((a) => (
+        <li data-up>
+          <a href={areaUrl(a, lang)}>
+            <small>{a.county}</small>
+            <h2>{a.name}</h2>
+            <p>{a.intro[lang]}</p>
+            <span>{es ? 'Ver zona' : 'See area'} <Icon name="arrow" /></span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .list a { display: flex; flex-direction: column; height: 100%; padding: 24px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); text-decoration: none; transition: border-color 0.2s, transform 0.4s var(--ease); }
+  .list a:hover { border-color: var(--sea-700); transform: translateY(-4px); }
+  small { font-weight: 600; color: var(--sea-700); }
+  h2 { font-family: var(--display); font-size: 2.1rem; line-height: 1.05; }
+  .list p { margin: 8px 0 14px; color: var(--ink-soft); }
+  .list span { margin-top: auto; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: var(--sea-700); }
+  .list span :global(svg) { width: 17px; height: 17px; }
+  @media (max-width: 900px) { .list { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 580px) { .list { grid-template-columns: 1fr; } }
+</style>

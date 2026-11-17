@@ -1,0 +1,62 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { servicePhotos } from '../lib/photos';
+import Crumbs from '../components/Crumbs.astro';
+import Icon from '../components/Icon.astro';
+import PlanBand from '../components/PlanBand.astro';
+import { services, serviceUrl } from '../data/services';
+import { breadcrumbs } from '../lib/schema';
+import { ui, routes, quoteHref, type Lang } from '../data/i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const es = lang === 'es';
+---
+<Base
+  lang={lang}
+  alt={routes.services[es ? 'en' : 'es']}
+  title={es ? 'Servicios de limpieza en el sur de Florida | AJ Cleaning Home' : 'Cleaning Services in South Florida | AJ Cleaning Home'}
+  description={es
+    ? 'Limpieza recurrente, profunda, de mudanza, Airbnb, oficinas, realtors, post-construcción y lavandería a domicilio en el sur de Florida.'
+    : 'Recurring, deep, move-out, Airbnb, office, realtor and post-construction cleaning, plus in-home laundry, across South Florida.'}
+  jsonLd={[breadcrumbs(Astro.site, [{ name: ui.nav.home[lang], href: routes.home[lang] }, { name: ui.nav.services[lang], href: routes.services[lang] }])]}
+>
+  <section class="page-hero">
+    <div class="wrap">
+      <Crumbs label="Breadcrumb" items={[{ name: ui.nav.home[lang], href: routes.home[lang] }, { name: ui.nav.services[lang] }]} />
+      <h1>{es ? 'Servicios de limpieza' : 'Cleaning services'}</h1>
+      <p class="lead">{es ? 'Un solo equipo para tu casa, tu renta o tu oficina.' : 'One team for your home, your rental or your office.'}</p>
+      <a class="btn btn--primary" href={quoteHref(lang)} data-track="cta_click">{ui.common.getQuote[lang]} <Icon name="arrow" /></a>
+    </div>
+  </section>
+
+  <section class="section">
+    <ul class="wrap list">
+      {services.map((s) => (
+        <li data-up>
+          <a href={serviceUrl(s, lang)}>
+            <Image class="pic" src={servicePhotos[s.id].src} alt={servicePhotos[s.id].alt[lang]} widths={[420, 760]} sizes="(max-width: 580px) 100vw, (max-width: 900px) 50vw, 400px" />
+            <h2>{s.name[lang]}</h2>
+            <p>{s.intro[lang]}</p>
+            <span class="more">{ui.common.learnMore[lang]} <Icon name="arrow" /></span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <div class="wrap"><PlanBand lang={lang} /></div>
+</Base>
+
+<style>
+  .list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .list a { display: flex; flex-direction: column; height: 100%; padding: 26px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; text-decoration: none; transition: border-color 0.2s, transform 0.4s var(--ease); }
+  .list a:hover { border-color: var(--sea-700); transform: translateY(-4px); }
+  .list :global(.pic) { width: calc(100% + 52px); max-width: none; margin: -26px -26px 0; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
+  h2 { margin-top: 16px; font-family: var(--display); font-size: 2rem; line-height: 1.02; }
+  .list p { margin: 10px 0 16px; color: var(--ink-soft); }
+  .more { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; font-weight: 600; color: var(--sea-700); }
+  .more :global(svg) { width: 17px; height: 17px; }
+  @media (max-width: 900px) { .list { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 580px) { .list { grid-template-columns: 1fr; } }
+</style>

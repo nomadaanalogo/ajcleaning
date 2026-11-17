@@ -1,0 +1,135 @@
+---
+import '@fontsource-variable/figtree/wght.css';
+import '@fontsource/cormorant-garamond/latin-600.css';
+import '../styles/global.css';
+import figtreeUrl from '@fontsource-variable/figtree/files/figtree-latin-wght-normal.woff2?url';
+import cormorantUrl from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-600-normal.woff2?url';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
+import { site, whatsappUrl } from '../data/site';
+import { areas } from '../data/areas';
+import { ui, routes, type Lang } from '../data/i18n';
+
+interface Props {
+  title: string;
+  description: string;
+  lang: Lang;
+  /** Ruta de esta misma página en el otro idioma. */
+  alt: string;
+  jsonLd?: Record<string, unknown>[];
+  noindex?: boolean;
+  /** El header empieza transparente sobre el hero. */
+  overlayHeader?: boolean;
+}
+
+const { title, description, lang, alt, jsonLd = [], noindex = false, overlayHeader = false } = Astro.props;
+const other: Lang = lang === 'en' ? 'es' : 'en';
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const altUrl = new URL(alt, Astro.site).toString();
+const enUrl = lang === 'en' ? canonical : altUrl;
+const esUrl = lang === 'es' ? canonical : altUrl;
+const ogImage = new URL('/brand/og.jpg', Astro.site).toString();
+const gaId = import.meta.env.PUBLIC_GA_ID;
+
+/* Negocio de área de servicio: sin dirección de calle publicada. */
+const business = {
+  '@context': 'https://schema.org',
+  '@type': 'HomeAndConstructionBusiness',
+  '@id': `${Astro.site}#business`,
+  name: site.name,
+  url: new URL(routes.home[lang], Astro.site).toString(),
+  logo: new URL('/brand/logo-512.png', Astro.site).toString(),
+  image: ogImage,
+  description: lang === 'en'
+    ? 'Recurring and one-time house, Airbnb and office cleaning across South Florida.'
+    : 'Limpieza recurrente y de una vez para casas, Airbnb y oficinas en el sur de Florida.',
+  ...(site.phone && { telephone: site.phone }),
+  ...(site.email && { email: site.email }),
+  priceRange: '$$',
+  paymentAccepted: 'Zelle, Bank transfer',
+  currenciesAccepted: 'USD',
+  knowsLanguage: ['en', 'es'],
+  openingHours: site.hoursSchema,
+  address: { '@type': 'PostalAddress', addressRegion: 'FL', addressCountry: 'US' },
+  areaServed: [
+    { '@type': 'State', name: 'Florida' },
+    ...areas.map((a) => ({ '@type': 'City', name: `${a.name}, FL` })),
+  ],
+  sameAs: Object.values(site.social).filter(Boolean),
+};
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    {!noindex && <link rel="alternate" hreflang="en" href={enUrl} />}
+    {!noindex && <link rel="alternate" hreflang="es" href={esUrl} />}
+    {!noindex && <link rel="alternate" hreflang="x-default" href={enUrl} />}
+    <link rel="preload" as="font" type="font/woff2" href={cormorantUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={figtreeUrl} crossorigin />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="theme-color" content="#fbf6ef" />
+    <meta name="geo.region" content="US-FL" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'es_US'} />
+    <meta property="og:locale:alternate" content={lang === 'en' ? 'es_US' : 'en_US'} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={site.name} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(business)} />
+    {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data)} />)}
+
+    {gaId && <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>}
+    {gaId && <script is:inline define:vars={{ gaId }}>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', gaId);</script>}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{ui.nav.skip[lang]}</a>
+    <Header lang={lang} alt={alt} overlay={overlayHeader} />
+    <main id="main"><slot /></main>
+    <Footer lang={lang} />
+
+    <a class="wa-float" href={whatsappUrl(ui.common.waHello[lang])} target="_blank" rel="noopener" aria-label={ui.common.waFloat[lang]} data-track="whatsapp_click"><Icon name="whatsapp" /></a>
+
+    <script>
+      // Aparición al entrar en pantalla y eventos de analítica.
+      const items = document.querySelectorAll<HTMLElement>('[data-up]');
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          e.target.classList.add('is-in');
+          io.unobserve(e.target);
+        }
+      }, { rootMargin: '0px 0px -8% 0px' });
+      items.forEach((el) => io.observe(el));
+
+      document.addEventListener('click', (e) => {
+        const el = (e.target as Element).closest<HTMLElement>('[data-track]');
+        const gtag = (window as unknown as { gtag?: (...a: unknown[]) => void }).gtag;
+        if (el && gtag) gtag('event', el.dataset.track, { location: location.pathname });
+      });
+    </script>
+
+    <style is:global>
+      .wa-float { position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); z-index: 40; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: #1f8f55; color: #fff; box-shadow: 0 14px 28px -10px rgb(15 58 61 / 0.6); transition: transform 0.3s var(--ease); }
+      .wa-float:hover { transform: scale(1.08); }
+      .wa-float svg, .wa-float :is(svg) { width: 30px; height: 30px; }
+    </style>
+  </body>
+</html>

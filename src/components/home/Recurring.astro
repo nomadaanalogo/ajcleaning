@@ -1,0 +1,160 @@
+---
+/**
+ * La sección que vende lo recurrente, sin cifras de dinero: al cambiar de plan se ve
+ * cómo cambia la casa con el tiempo y cuántas visitas hay al año.
+ * La curva es una ilustración y así se dice en la página.
+ */
+import Icon from '../Icon.astro';
+import { plans, freshnessPath, cleanWeeks, chartX, chartY, CHART } from '../../data/plans';
+import { ui, quoteHref, type Lang } from '../../data/i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const es = lang === 'es';
+const start = plans[0];
+const planData = plans.map((f) => ({
+  id: f.id,
+  interval: f.interval,
+  visits: f.visits,
+  path: freshnessPath(f.interval),
+  label: ui.frequency[f.id][lang],
+  caption: {
+    weekly: es ? 'Siempre lista.' : 'Always ready.',
+    biweekly: es ? 'Casi siempre lista.' : 'Almost always ready.',
+    triweekly: es ? 'Bien. Con algunos días de espera.' : 'Good. With a few waiting days.',
+    once: es ? 'Linda una semana. Después, a empezar de nuevo.' : 'Lovely for a week. Then back to square one.',
+  }[f.id],
+  rate: {
+    weekly: es ? 'Nuestra mejor tarifa por visita' : 'Our best rate per visit',
+    biweekly: es ? 'Tarifa reducida por visita' : 'Reduced rate per visit',
+    triweekly: es ? 'Tarifa reducida por visita' : 'Reduced rate per visit',
+    once: es ? 'Tarifa estándar' : 'Standard rate',
+  }[f.id],
+}));
+const strings = {
+  visitsYear: ui.common.visits[lang],
+  visit: es ? 'una visita' : 'one visit',
+  week: es ? 'Semana' : 'Week',
+  justCleaned: es ? 'limpieza hoy' : 'cleaned today',
+  daysAfter: es ? '{n} días desde la última limpieza' : '{n} days since last clean',
+};
+const tickWeeks = [0, 4, 8, 12];
+---
+<section class="rec" id="recurring">
+  <div class="wrap">
+    <div class="rec-head" data-up>
+      <p class="kicker"><Icon name="star" /> {es ? 'Lo que de verdad cambia tu casa' : 'What really changes your home'}</p>
+      <h2 class="h2">{es ? <>Una limpieza se acaba.<br /><em>Una rutina, no.</em></> : <>One clean fades.<br /><em>A routine doesn’t.</em></>}</h2>
+    </div>
+
+    <div class="rec-grid">
+      <div class="panel" data-up data-rec data-plans={JSON.stringify(planData)} data-strings={JSON.stringify(strings)}>
+        <div class="plan-tabs" role="radiogroup" aria-label={es ? 'Elige un plan' : 'Choose a plan'}>
+          {planData.map((p, i) => (
+            <button type="button" role="radio" aria-checked={i === 0 ? 'true' : 'false'} class:list={['tab', { 'is-on': i === 0 }]} data-plan={p.id}>{p.label}</button>
+          ))}
+        </div>
+
+        <figure class="chart" data-chart>
+          <figcaption class="chart-title">{es ? 'Qué tan limpia se mantiene tu casa en 12 semanas' : 'How clean your home stays over 12 weeks'}</figcaption>
+          <svg viewBox={`0 0 ${CHART.w} ${CHART.h}`} role="img" aria-label={es ? 'Ilustración: con limpieza semanal la casa se mantiene limpia; con una sola limpieza, cae con el tiempo.' : 'Illustration: with weekly cleaning the home stays clean; with one clean it declines over time.'}>
+            <defs>
+              <linearGradient id="fresh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#98D4CC" stop-opacity="0.34" /><stop offset="1" stop-color="#98D4CC" stop-opacity="0" /></linearGradient>
+            </defs>
+            <line class="grid" x1={CHART.left} x2={CHART.w - CHART.right} y1={chartY(1)} y2={chartY(1)} />
+            <line class="base" x1={CHART.left} x2={CHART.w - CHART.right} y1={chartY(0)} y2={chartY(0)} />
+            <line class="limit" x1={CHART.left} x2={CHART.w - CHART.right} y1={chartY(CHART.threshold)} y2={chartY(CHART.threshold)} />
+            <text class="lbl" x={CHART.left + 6} y={chartY(1) - 7}>{es ? 'Recién limpia' : 'Just cleaned'}</text>
+            <text class="lbl" x={CHART.w - CHART.right - 6} y={chartY(CHART.threshold) - 7} text-anchor="end">{es ? 'Ya toca limpiar' : 'Time to clean'}</text>
+            {tickWeeks.map((w) => <text class="lbl tick" x={chartX(w)} y={CHART.h - 10} text-anchor={w === 0 ? 'start' : w === 12 ? 'end' : 'middle'}>{`${strings.week} ${w}`}</text>)}
+            <path class="area" data-area d={`${planData[0].path}L${chartX(12)} ${chartY(0)}L${chartX(0)} ${chartY(0)}Z`} fill="url(#fresh)" />
+            <path class="line" data-line d={planData[0].path} />
+            <g data-dots>
+              {cleanWeeks(start.interval).map((w) => <circle class="dot" cx={chartX(w)} cy={chartY(1)} r="4.500" />)}
+            </g>
+            <line class="cross" data-cross y1={chartY(1)} y2={chartY(0)} x1="0" x2="0" />
+            <circle class="cursor" data-cursor r="6" cx="0" cy="0" />
+          </svg>
+          <div class="tip" data-tip hidden></div>
+          <p class="disclaimer">{es ? 'Ilustración, no una medición.' : 'An illustration, not a measurement.'}</p>
+        </figure>
+      </div>
+
+      <div class="numbers" data-up>
+        <p class="n-caption" data-rec-caption>{planData[0].caption}</p>
+        <p class="n-visits"><strong data-rec-visits>52</strong> <span data-rec-visits-label>{strings.visitsYear}</span></p>
+        <p class="n-save"><Icon name="star" /> <span data-rec-rate>{planData[0].rate}</span></p>
+
+        <div class="year" aria-hidden="true">
+          <div class="dots" data-year>{Array.from({ length: 52 }, (_, i) => <i class:list={[{ on: (i % start.interval) === 0 }]}></i>)}</div>
+        </div>
+
+        <a class="btn btn--cream" href={quoteHref(lang)} data-track="cta_click">{es ? 'Quiero mi plan' : 'Start my plan'} <Icon name="arrow" /></a>
+      </div>
+    </div>
+
+    <ul class="perks" data-up>
+      <li><b>{es ? 'El mismo equipo.' : 'The same team.'}</b> {es ? 'Saben cómo te gusta.' : 'They know how you like it.'}</li>
+      <li><b>{es ? 'El mismo día.' : 'The same day.'}</b> {es ? 'Nada que recordar.' : 'Nothing to remember.'}</li>
+      <li><b>{es ? 'Tu fin de semana.' : 'Your weekend.'}</b> {es ? 'Otra vez tuyo.' : 'Yours again.'}</li>
+    </ul>
+  </div>
+</section>
+
+<script>
+  import '../../scripts/recurring';
+</script>
+
+<style>
+  .rec { position: relative; background: var(--sea-900); color: #f2f9f7; padding-block: clamp(76px, 10vw, 140px); overflow: hidden; }
+  .rec-head h2 { margin-top: 14px; }
+  .rec-head em { font-style: italic; color: var(--sea-200); }
+  .rec .kicker { color: var(--sea-200); }
+  .rec-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); margin-top: clamp(32px, 4vw, 56px); align-items: center; }
+
+  .plan-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .tab { min-height: 46px; padding: 8px 18px; background: rgb(255 255 255 / 0.07); border: 1.5px solid rgb(255 255 255 / 0.2); border-radius: 999px; color: #f2f9f7; font-weight: 600; cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s; }
+  .tab:hover { border-color: var(--sea-200); }
+  .tab.is-on { background: var(--sea-200); color: var(--sea-900); border-color: var(--sea-200); }
+  .tab:focus-visible { outline-color: #f2d49c; }
+
+  .chart { position: relative; margin: 0; }
+  .chart-title { font-weight: 600; margin-bottom: 10px; }
+  .chart svg { width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
+  .grid { stroke: rgb(255 255 255 / 0.1); }
+  .base { stroke: rgb(255 255 255 / 0.28); }
+  .limit { stroke: #f2d49c; stroke-width: 1.5; stroke-dasharray: 5 6; }
+  .lbl { fill: #bcd9d4; font: 500 12px var(--body); }
+  .line { fill: none; stroke: var(--sea-200); stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
+  .dot { fill: var(--sea-200); stroke: var(--sea-900); stroke-width: 2; }
+  .cross { stroke: rgb(255 255 255 / 0.4); opacity: 0; }
+  .cursor { fill: #f2d49c; stroke: var(--sea-900); stroke-width: 2; opacity: 0; }
+  .tip { position: absolute; top: 34px; padding: 6px 12px; background: var(--cream); color: var(--ink); font-size: 0.86rem; font-weight: 600; border-radius: 10px; white-space: nowrap; pointer-events: none; box-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.6); }
+  .disclaimer { margin-top: 6px; font-size: 0.82rem; color: #bcd9d4; }
+
+  .n-caption { font-family: var(--display); font-weight: 600; font-size: clamp(1.9rem, 3vw, 2.7rem); line-height: 1.05; min-height: 2.1em; }
+  .n-visits { margin-top: 14px; display: flex; align-items: baseline; gap: 10px; }
+  .n-visits strong { font-family: var(--display); font-weight: 600; font-size: clamp(4.6rem, 8vw, 7rem); line-height: 0.95; }
+  .n-visits span { color: #bcd9d4; }
+  .n-save { display: inline-flex; align-items: center; gap: 8px; margin-top: 12px; padding: 8px 14px; background: #f2d49c; color: var(--ink); border-radius: 12px; font-weight: 700; line-height: 1.2; }
+  .n-save :global(.star) { width: 14px; height: 14px; fill: var(--brown); flex: none; }
+
+  .year { margin: 24px 0; }
+  .dots { display: grid; grid-template-columns: repeat(26, 1fr); gap: 4px; max-width: 360px; }
+  .dots i { aspect-ratio: 1; border-radius: 50%; background: rgb(255 255 255 / 0.13); transition: background 0.35s; transition-delay: calc(var(--i, 0) * 6ms); }
+  .dots i.on { background: var(--sea-200); }
+
+  .perks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: clamp(36px, 5vw, 64px); padding-top: 28px; border-top: 1px solid rgb(255 255 255 / 0.15); }
+  .perks b { display: block; font-family: var(--display); font-size: 1.6rem; font-weight: 600; line-height: 1.1; color: #fff; }
+  .perks li { color: #bcd9d4; }
+
+  @media (max-width: 900px) {
+    .rec-grid { grid-template-columns: 1fr; }
+    .n-caption { min-height: 0; }
+  }
+  @media (max-width: 620px) {
+    .perks { grid-template-columns: 1fr; }
+    .tab { padding-inline: 14px; font-size: 0.93rem; flex: 1 1 40%; }
+    .lbl { font-size: 21px; }
+    .tick { font-size: 20px; }
+  }
+</style>

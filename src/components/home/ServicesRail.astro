@@ -1,0 +1,68 @@
+---
+import { Image } from 'astro:assets';
+import Icon from '../Icon.astro';
+import { servicePhotos } from '../../lib/photos';
+import { services, serviceUrl } from '../../data/services';
+import { ui, routes, type Lang } from '../../data/i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const es = lang === 'es';
+---
+<section class="rail" id="services" data-rail>
+  <div class="rail-pin" data-rail-pin>
+    <div class="wrap rail-head">
+      <div>
+        <p class="kicker"><Icon name="star" /> {ui.nav.services[lang]}</p>
+        <h2 class="h2">{es ? 'Un equipo. Todo limpio.' : 'One team. All clean.'}</h2>
+      </div>
+      <a class="all" href={routes.services[lang]}>{ui.common.allServices[lang]} <Icon name="arrow" /></a>
+    </div>
+    <div class="viewport" data-rail-view>
+      <ul class="track" data-rail-track>
+        {services.map((s) => (
+          <li class:list={['svc', `svc--${s.tint}`]}>
+            <a href={serviceUrl(s, lang)}>
+              <Image class="pic" src={servicePhotos[s.id].src} alt={servicePhotos[s.id].alt[lang]} widths={[420, 760]} sizes="(max-width: 700px) 80vw, 370px" />
+              <div class="body">
+                <h3>{s.name[lang]}</h3>
+                <p>{s.tagline[lang]}</p>
+                <span class="more">{ui.common.learnMore[lang]} <Icon name="arrow" /></span>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .rail { background: var(--cream); padding-block: clamp(72px, 9vw, 112px) 56px; }
+  .rail-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 16px 40px; margin-bottom: 32px; }
+  h2 { margin-top: 12px; }
+  .all { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; text-decoration: none; color: var(--sea-700); padding-block: 10px; }
+  .all :global(svg) { width: 18px; height: 18px; }
+  .viewport { overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-block: 6px 16px; }
+  .viewport::-webkit-scrollbar { display: none; }
+  .track { display: flex; gap: 16px; width: max-content; padding-inline: max(var(--gutter), calc((100vw - 1240px) / 2)); }
+  .svc { width: clamp(270px, 28vw, 370px); flex: none; scroll-snap-align: center; }
+  .svc a { position: relative; display: flex; flex-direction: column; height: 100%; text-decoration: none; border-radius: var(--radius); overflow: hidden; transition: transform 0.45s var(--ease), box-shadow 0.45s; }
+  .svc a:hover { transform: translateY(-6px); box-shadow: 0 28px 44px -30px rgb(60 36 21 / 0.55); }
+  .svc--sea a { background: var(--sea-200); }
+  .svc--cream a { background: #f7eddd; }
+  .svc--sand a { background: var(--sand); }
+  .svc--mist a { background: var(--sea-50); box-shadow: inset 0 0 0 1px var(--sea-200); }
+  .svc :global(.pic) { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
+  .body { display: flex; flex-direction: column; flex: 1; padding: 20px 24px 24px; }
+  h3 { font-family: var(--display); font-size: 1.95rem; line-height: 1; letter-spacing: -0.01em; }
+  .svc p { margin-top: 8px; color: var(--ink-soft); }
+  .more { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 14px; font-weight: 600; color: var(--sea-800); }
+  .more :global(svg) { width: 17px; height: 17px; transition: translate 0.3s var(--ease); }
+  .svc a:hover .more :global(svg) { translate: 4px 0; }
+
+  /* Escritorio con movimiento: el scroll vertical mueve el riel */
+  :global(.rail-pinned).rail { padding-block: 0; }
+  :global(.rail-pinned) .rail-pin { position: sticky; top: 0; height: 100svh; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+  :global(.rail-pinned) .viewport { overflow: visible; scroll-snap-type: none; }
+  :global(.rail-pinned) .track { will-change: transform; }
+</style>

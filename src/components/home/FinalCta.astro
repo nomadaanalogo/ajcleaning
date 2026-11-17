@@ -1,0 +1,35 @@
+---
+import Icon from '../Icon.astro';
+import { whatsappUrl } from '../../data/site';
+import { ui, quoteHref, type Lang } from '../../data/i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const es = lang === 'es';
+---
+<section class="final">
+  <span class="sp s1"><Icon name="star" /></span>
+  <span class="sp s2"><Icon name="star" /></span>
+  <span class="sp s3"><Icon name="star" /></span>
+  <div class="wrap inner" data-up>
+    <h2>{es ? <>La próxima vez que llegues,<br /><em>ya estará limpia.</em></> : <>Next time you walk in,<br /><em>it’s already clean.</em></>}</h2>
+    <p class="lead">{es ? 'Empieza tu plan semanal hoy.' : 'Start your weekly plan today.'}</p>
+    <div class="cta-row">
+      <a class="btn btn--primary" href={quoteHref(lang)} data-track="cta_click">{ui.common.getQuote[lang]} <Icon name="arrow" /></a>
+      <a class="btn btn--line" href={whatsappUrl(ui.common.waHello[lang])} target="_blank" rel="noopener" data-track="whatsapp_click"><Icon name="whatsapp" /> WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .final { position: relative; overflow: hidden; background: radial-gradient(120% 120% at 80% 10%, var(--sea-200), var(--sea-100) 45%, var(--cream)); padding-block: clamp(90px, 13vw, 180px); text-align: center; }
+  .inner { display: grid; justify-items: center; gap: 22px; }
+  h2 { font-family: var(--display); font-size: clamp(3rem, 7.6vw, 6.6rem); line-height: 0.96; letter-spacing: -0.02em; }
+  em { font-style: italic; color: var(--sea-700); }
+  .cta-row { justify-content: center; }
+  .sp { position: absolute; }
+  .sp :global(.star) { width: 100%; height: 100%; fill: var(--gold); }
+  .s1 { top: 14%; left: 12%; width: 44px; height: 44px; animation: tw 3.4s ease-in-out infinite; }
+  .s2 { bottom: 16%; right: 13%; width: 62px; height: 62px; animation: tw 4.2s ease-in-out infinite 0.8s; }
+  .s3 { top: 22%; right: 26%; width: 22px; height: 22px; animation: tw 2.8s ease-in-out infinite 1.4s; }
+  @keyframes tw { 50% { transform: scale(0.55) rotate(45deg); opacity: 0.45; } }
+</style>

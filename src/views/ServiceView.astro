@@ -1,0 +1,115 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { servicePhotos } from '../lib/photos';
+import Crumbs from '../components/Crumbs.astro';
+import Icon from '../components/Icon.astro';
+import QuoteWizard from '../components/QuoteWizard.astro';
+import PlanBand from '../components/PlanBand.astro';
+import Faq from '../components/Faq.astro';
+import { serviceUrl, services, type Service } from '../data/services';
+import { areas, areaUrl } from '../data/areas';
+import { rooms } from '../data/rooms';
+import { faqSchema } from '../data/faq';
+import { breadcrumbs, serviceSchema } from '../lib/schema';
+import { ui, routes, type Lang } from '../data/i18n';
+interface Props { lang: Lang; service: Service }
+const { lang, service: s } = Astro.props;
+const es = lang === 'es';
+const other: Lang = es ? 'en' : 'es';
+const url = serviceUrl(s, lang);
+const crumbs = [
+  { name: ui.nav.home[lang], href: routes.home[lang] },
+  { name: ui.nav.services[lang], href: routes.services[lang] },
+  { name: s.name[lang], href: url },
+];
+const related = services.filter((x) => x.id !== s.id).slice(0, 4);
+---
+<Base
+  lang={lang}
+  alt={serviceUrl(s, other)}
+  title={s.title[lang]}
+  description={s.description[lang]}
+  jsonLd={[
+    breadcrumbs(Astro.site, crumbs),
+    serviceSchema(Astro.site, { name: s.h1[lang], description: s.description[lang], href: url, areaServed: areas.map((a) => `${a.name}, FL`) }),
+    faqSchema(s.faq, lang),
+  ]}
+>
+  <section class="page-hero">
+    <div class="wrap split">
+      <div>
+      <Crumbs label="Breadcrumb" items={[{ name: crumbs[0].name, href: crumbs[0].href }, { name: crumbs[1].name, href: crumbs[1].href }, { name: crumbs[2].name }]} />
+      <h1>{s.h1[lang]}</h1>
+      <p class="lead">{s.intro[lang]}</p>
+      <div class="cta-row">
+        <a class="btn btn--primary" href="#quote" data-track="cta_click">{ui.common.getQuote[lang]} <Icon name="arrow" /></a>
+      </div>
+      </div>
+      <Image class="hero-pic" src={servicePhotos[s.id].src} alt={servicePhotos[s.id].alt[lang]} widths={[480, 760, 1024]} sizes="(max-width: 860px) 100vw, 44vw" loading="eager" fetchpriority="high" />
+    </div>
+  </section>
+
+  <section class="section points">
+    <div class="wrap">
+      <h2 class="h2">{es ? 'Qué recibes' : 'What you get'}</h2>
+      <ul>
+        {s.points.map((p) => <li data-up><Icon name="check" /> {p[lang]}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  {s.showRooms && (
+    <section class="checklist">
+      <div class="wrap">
+        <h2 class="h2">{es ? 'Cuarto por cuarto' : 'Room by room'}</h2>
+        <div class="check-grid">
+          {rooms.map((r) => (
+            <article>
+              <h3>{r.name[lang]}</h3>
+              <ul>{r.items.map((it) => <li>{it[lang]}</li>)}</ul>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <QuoteWizard lang={lang} preset={s.preset} title={es ? `Cotiza: ${s.name.es.toLowerCase()}` : `Get a quote: ${s.name.en.toLowerCase()}`} />
+
+  <div class="wrap"><PlanBand lang={lang} /></div>
+
+  <Faq lang={lang} items={s.faq} />
+
+  <section class="section more">
+    <div class="wrap">
+      <h2 class="h2">{es ? `${s.name.es} cerca de ti` : `${s.name.en} near you`}</h2>
+      <ul class="link-grid">
+        {areas.map((a) => <li><a class="link-card" href={areaUrl(a, lang)}>{a.name} <Icon name="arrow" /></a></li>)}
+      </ul>
+      <h2 class="h2 second">{es ? 'Otros servicios' : 'Other services'}</h2>
+      <ul class="link-grid">
+        {related.map((x) => <li><a class="link-card" href={serviceUrl(x, lang)}>{x.name[lang]} <Icon name="arrow" /></a></li>)}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .split { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(24px, 4vw, 56px); align-items: center; }
+  .split :global(.hero-pic) { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 24px; box-shadow: 0 30px 50px -36px rgb(60 36 21 / 0.6); }
+  @media (max-width: 860px) { .split { grid-template-columns: 1fr; } }
+  .points ul { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 40px; margin-top: 28px; max-width: 900px; }
+  .points li { display: flex; align-items: center; gap: 12px; font-size: 1.15rem; }
+  .points li :global(svg) { width: 28px; height: 28px; padding: 5px; flex: none; border-radius: 50%; background: var(--sea-200); color: var(--sea-900); stroke-width: 2.4; }
+  .checklist { padding-bottom: clamp(64px, 9vw, 110px); }
+  .check-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 26px; }
+  .check-grid article { padding: 22px; background: var(--cream-2); border-radius: 20px; }
+  .check-grid h3 { font-family: var(--display); font-size: 1.8rem; line-height: 1; margin-bottom: 10px; }
+  .check-grid li { padding-block: 4px; font-size: 0.97rem; color: var(--ink-soft); }
+  .more { background: var(--cream-2); }
+  .more h2 { margin-bottom: 22px; font-size: clamp(2rem, 4vw, 3.2rem); }
+  .second { margin-top: 44px; }
+  @media (max-width: 900px) { .check-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .points ul, .check-grid { grid-template-columns: 1fr; } }
+</style>

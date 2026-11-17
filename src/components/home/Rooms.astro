@@ -1,0 +1,82 @@
+---
+import Icon from '../Icon.astro';
+import { Image } from 'astro:assets';
+import { roomPhotos } from '../../lib/photos';
+import { rooms } from '../../data/rooms';
+import { ui, type Lang } from '../../data/i18n';
+interface Props { lang: Lang; compact?: boolean }
+const { lang } = Astro.props;
+const es = lang === 'es';
+---
+<section class="rooms" id="included">
+  <div class="wrap grid">
+    <div class="media" aria-hidden="true">
+      <div class="frame">
+        {rooms.map((r, i) => <Image src={roomPhotos[r.id].src} alt="" class:list={['art', { 'is-on': i === 0 }]} data-room-art={i} widths={[640, 1024]} sizes="(max-width: 900px) 100vw, 45vw" />)}
+        <span class="badge" data-room-badge>01 / 04</span>
+      </div>
+    </div>
+
+    <div class="content">
+      <p class="kicker"><Icon name="star" /> {es ? 'Qué incluye' : 'What’s included'}</p>
+      <h2 class="h2">{es ? 'Cuarto por cuarto. Sin atajos.' : 'Room by room. No shortcuts.'}</h2>
+      <ol class="list">
+        {rooms.map((r, i) => (
+          <li class:list={['room', { 'is-on': i === 0 }]} data-room={i}>
+            <Image src={roomPhotos[r.id].src} alt={roomPhotos[r.id].alt[lang]} class="art-inline" widths={[640, 1024]} sizes="(max-width: 900px) 100vw, 1px" />
+            <h3><span>{String(i + 1).padStart(2, '0')}</span> {r.name[lang]}</h3>
+            <ul class="checks">
+              {r.items.map((it, j) => <li style={`--d:${j * 70}ms`}><Icon name="check" /> {it[lang]}</li>)}
+            </ul>
+          </li>
+        ))}
+      </ol>
+      <aside class="addons">
+        <h3>{es ? 'Súmale lo que quieras' : 'Add whatever you need'}</h3>
+        <ul>
+          {Object.values(ui.extras).map((x) => <li><Icon name="plus" /> {x[lang]}</li>)}
+        </ul>
+        <p class="note">{es ? 'No lavamos platos sucios. Así cuidamos tus cosas y evitamos inconvenientes.' : 'We do not wash dirty dishes. It protects your things and avoids any issue.'}</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<style>
+  .rooms { background: var(--cream-2); padding-block: clamp(72px, 10vw, 136px); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 6vw, 88px); }
+  .media { position: relative; }
+  .frame { position: sticky; top: 12vh; height: 76vh; max-height: 720px; border-radius: 30px; overflow: hidden; background: var(--sea-50); box-shadow: 0 34px 60px -42px rgb(60 36 21 / 0.55); }
+  .frame :global(.art) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; scale: 1.05; transition: opacity 0.7s var(--ease), scale 1.1s var(--ease); }
+  .frame :global(.art.is-on) { opacity: 1; scale: 1; }
+  .badge { position: absolute; left: 16px; bottom: 16px; padding: 6px 14px; background: var(--sea-900); color: #fff; border-radius: 99px; font-weight: 600; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+  h2 { margin-top: 12px; }
+  .list { margin-top: clamp(28px, 4vw, 48px); }
+  .room { min-height: 58vh; padding-top: 28px; border-top: 1px solid var(--line); }
+  .room h3 { display: flex; align-items: baseline; gap: 14px; font-family: var(--display); font-size: clamp(2.2rem, 3.6vw, 3.2rem); line-height: 1; }
+  .room h3 span { font-size: 0.5em; color: var(--sea-700); font-variant-numeric: lining-nums; }
+  .checks { display: grid; gap: 10px; margin-top: 18px; }
+  .checks li { display: flex; align-items: center; gap: 12px; font-size: 1.1rem; }
+  .checks :global(svg) { width: 26px; height: 26px; padding: 4px; flex: none; border-radius: 50%; background: var(--sea-200); color: var(--sea-900); stroke-width: 2.4; }
+  /* Las marcas se animan cuando el cuarto está activo */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .room:not(.is-on) .checks li { opacity: 0.35; }
+    :global(.js) .checks li { transition: opacity 0.4s var(--d); }
+    :global(.js) .checks :global(svg) { transition: scale 0.4s var(--ease) var(--d); }
+    :global(.js) .room:not(.is-on) .checks :global(svg) { scale: 0.6; }
+  }
+  .room :global(.art-inline) { display: none; }
+  .addons { margin-top: 36px; padding: clamp(22px, 3vw, 32px); background: var(--cream); border-radius: 24px; }
+  .addons h3 { font-family: var(--display); font-size: 2rem; line-height: 1; margin-bottom: 14px; }
+  .addons li { display: flex; align-items: center; gap: 10px; padding-block: 9px; border-bottom: 1px dashed var(--line); }
+  .addons li :global(svg) { width: 18px; height: 18px; flex: none; color: var(--sea-700); }
+  .note { margin-top: 14px; font-size: 0.95rem; color: var(--ink-soft); }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr; }
+    .media { display: none; }
+    .room { min-height: 0; padding-bottom: 32px; }
+    .room :global(.art-inline) { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 20px; margin-bottom: 18px; }
+    :global(.js) .room:not(.is-on) .checks li { opacity: 1; }
+    :global(.js) .room:not(.is-on) .checks :global(svg) { scale: 1; }
+  }
+</style>

@@ -1,0 +1,64 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+import { services, serviceUrl } from '../data/services';
+import { areas, areaUrl } from '../data/areas';
+import { ui, routes, type Lang } from '../data/i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const es = lang === 'es';
+const year = new Date().getFullYear();
+---
+<footer class="footer">
+  <div class="wrap grid">
+    <div class="about">
+      <img src="/brand/logo-160.webp" alt="AJ Cleaning Home" width="96" height="96" loading="lazy" />
+      <p>{es ? 'Limpieza de casas, Airbnb y oficinas en Florida.' : 'House, Airbnb and office cleaning across Florida.'}</p>
+      <ul class="facts">
+        <li><Icon name="clock" /> {es ? 'Lun a vie, 8 am a 5 pm. Horario flexible.' : 'Mon to Fri, 8 am to 5 pm. Flexible schedule.'}</li>
+        <li><Icon name="card" /> {es ? 'Zelle o transferencia directa' : 'Zelle or direct transfer'}</li>
+        {site.phone && <li><Icon name="phone" /> <a href={`tel:${site.phone}`}>{site.phone}</a></li>}
+      </ul>
+    </div>
+    <nav aria-label={ui.nav.services[lang]}>
+      <h2>{ui.nav.services[lang]}</h2>
+      <ul>{services.map((s) => <li><a href={serviceUrl(s, lang)}>{s.name[lang]}</a></li>)}</ul>
+    </nav>
+    <nav aria-label={ui.nav.areas[lang]}>
+      <h2>{ui.nav.areas[lang]}</h2>
+      <ul class="two">{areas.map((a) => <li><a href={areaUrl(a, lang)}>{a.name}</a></li>)}</ul>
+    </nav>
+    <nav aria-label="AJ Cleaning Home">
+      <h2>AJ Cleaning Home</h2>
+      <ul>
+        <li><a href={`${routes.home[lang]}#faq`}>{ui.nav.faq[lang]}</a></li>
+        <li><a href={routes.terms[lang]}>{es ? 'Términos y condiciones' : 'Terms and conditions'}</a></li>
+        <li><a href={routes.privacy[lang]}>{es ? 'Privacidad' : 'Privacy'}</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="wrap legal">
+    <p>© {year} {site.name}. {es ? 'Hecho con cariño en Florida.' : 'Made with care in Florida.'}</p>
+    <p>{es ? 'Página desarrollada por' : 'Website developed by'} <a href="https://nmdenlaweb.com" target="_blank" rel="noopener">nmdenlaweb</a></p>
+  </div>
+</footer>
+
+<style>
+  .footer { background: var(--sea-900); color: #e7f2ef; padding-block: 64px 96px; }
+  .grid { display: grid; grid-template-columns: 1.4fr 1fr 1.2fr 0.8fr; gap: 40px; }
+  .about img { border-radius: 50%; margin-bottom: 16px; }
+  .about p { max-width: 30ch; }
+  .facts { display: grid; gap: 8px; margin-top: 18px; font-size: 0.95rem; color: #bcd9d4; }
+  .facts li { display: flex; gap: 10px; align-items: flex-start; }
+  .facts :global(svg) { width: 18px; height: 18px; flex: none; margin-top: 3px; }
+  h2 { font-family: var(--body); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--sea-200); margin-bottom: 14px; }
+  nav li { padding-block: 3px; }
+  nav a { text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  .two { columns: 2; column-gap: 20px; }
+  .legal a { font-weight: 600; color: #fff; text-underline-offset: 3px; }
+  .legal a:hover { color: var(--sea-200); }
+  .legal { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 24px; margin-top: 44px; padding-top: 20px; border-top: 1px solid rgb(255 255 255 / 0.14); font-size: 0.9rem; color: #bcd9d4; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } .about { grid-column: 1 / -1; } }
+  @media (max-width: 480px) { .grid { grid-template-columns: 1fr; } }
+</style>

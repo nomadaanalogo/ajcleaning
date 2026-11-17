@@ -1,0 +1,59 @@
+---
+import Base from '../layouts/Base.astro';
+import { routes, type Lang } from '../data/i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const es = lang === 'es';
+---
+<Base
+  lang={lang}
+  alt={routes.privacy[es ? 'en' : 'es']}
+  title={es ? 'Política de privacidad | AJ Cleaning Home' : 'Privacy Policy | AJ Cleaning Home'}
+  description={es ? 'Cómo usa AJ Cleaning Home los datos que nos envías al pedir una cotización.' : 'How AJ Cleaning Home uses the details you send us when asking for a quote.'}
+>
+  <section class="page-hero">
+    <div class="wrap"><h1>{es ? 'Política de privacidad' : 'Privacy policy'}</h1></div>
+  </section>
+  <section class="section">
+    <div class="wrap body">
+      {es ? (
+        <>
+          <h2>Qué datos recibimos</h2>
+          <p>Tu nombre, correo, la dirección de la propiedad y el servicio que pides. Solo lo que decides enviarnos.</p>
+          <h2>Para qué los usamos</h2>
+          <p>Para cotizar, agendar y prestar el servicio. No vendemos tus datos.</p>
+          <h2>Dónde se guardan</h2>
+          <p>En una hoja privada de Google Drive que usa nuestro equipo para darte seguimiento. Google procesa esos datos como proveedor.</p>
+          <h2>WhatsApp</h2>
+          <p>Si nos escribes por WhatsApp, ese mensaje se rige también por las políticas de WhatsApp.</p>
+          <h2>Pagos</h2>
+          <p>Esta página no cobra ni guarda datos de pago. Los pagos se hacen por Zelle o transferencia directa.</p>
+          <h2>Tus datos</h2>
+          <p>¿Quieres que los corrijamos o los borremos? Escríbenos por WhatsApp y lo hacemos.</p>
+        </>
+      ) : (
+        <>
+          <h2>What we receive</h2>
+          <p>Your name, email, the property address and the service you request. Only what you choose to send us.</p>
+          <h2>How we use it</h2>
+          <p>To quote, schedule and deliver the service. We do not sell your data.</p>
+          <h2>Where it is stored</h2>
+          <p>In a private Google Drive sheet our team uses to follow up with you. Google processes that data as a provider.</p>
+          <h2>WhatsApp</h2>
+          <p>If you message us on WhatsApp, that message is also subject to WhatsApp’s policies.</p>
+          <h2>Payments</h2>
+          <p>This site does not charge you or store payment details. Payments are made by Zelle or direct transfer.</p>
+          <h2>Your data</h2>
+          <p>Want it corrected or deleted? Message us on WhatsApp and we will do it.</p>
+        </>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .body { max-width: 720px; }
+  h2 { margin-top: 28px; font-family: var(--display); font-size: 1.9rem; line-height: 1.1; }
+  h2:first-child { margin-top: 0; }
+  p { margin-top: 8px; color: var(--ink-soft); }
+</style>

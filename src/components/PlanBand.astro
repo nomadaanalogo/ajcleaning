@@ -1,0 +1,42 @@
+---
+/** Planes para páginas internas, sin cifras: la semanal siempre destacada. */
+import Icon from './Icon.astro';
+import { plans } from '../data/plans';
+import { ui, type Lang } from '../data/i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const es = lang === 'es';
+const notes = {
+  weekly: es ? 'Nuestra mejor tarifa por visita' : 'Our best rate per visit',
+  biweekly: es ? 'Tarifa reducida por visita' : 'Reduced rate per visit',
+  triweekly: es ? 'Tarifa reducida por visita' : 'Reduced rate per visit',
+  once: es ? 'Tarifa estándar' : 'Standard rate',
+};
+---
+<div class="band">
+  <h2 class="h2">{es ? 'Mientras más seguido, mejor tarifa.' : 'The more often, the better the rate.'}</h2>
+  <ul class="tiers">
+    {plans.map((f) => (
+      <li class:list={['tier', { 'tier--top': f.id === 'weekly' }]}>
+        {f.id === 'weekly' && <em><Icon name="star" /> {ui.common.recommended[lang]}</em>}
+        <strong>{ui.frequency[f.id][lang]}</strong>
+        <span>{notes[f.id]}</span>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .band { padding-block: clamp(56px, 8vw, 96px); }
+  .tiers { display: grid; grid-template-columns: 1.35fr repeat(3, 1fr); gap: 12px; margin-top: 28px; align-items: stretch; }
+  .tier { display: flex; flex-direction: column; gap: 8px; padding: 22px; background: #fff; border: 1px solid var(--line); border-radius: 22px; }
+  strong { font-family: var(--display); font-weight: 600; font-size: 2rem; line-height: 1; }
+  span { margin-top: auto; font-weight: 600; font-size: 0.95rem; color: var(--sea-700); }
+  .tier--top { background: var(--sea-900); color: #f2f9f7; border-color: var(--sea-900); }
+  .tier--top strong { font-size: clamp(2.6rem, 4vw, 3.4rem); }
+  .tier--top span { color: #f2d49c; font-size: 1.02rem; }
+  em { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: #f2d49c; color: var(--ink); border-radius: 99px; font-style: normal; font-size: 0.82rem; font-weight: 700; }
+  em :global(.star) { width: 11px; height: 11px; fill: var(--brown); }
+  @media (max-width: 860px) { .tiers { grid-template-columns: 1fr 1fr; } .tier--top { grid-column: 1 / -1; } }
+  @media (max-width: 480px) { .tier { padding: 16px; } strong { font-size: 1.6rem; } }
+</style>

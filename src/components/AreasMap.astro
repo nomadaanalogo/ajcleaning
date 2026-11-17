@@ -1,0 +1,82 @@
+---
+import Icon from './Icon.astro';
+import { areas, areaUrl } from '../data/areas';
+import { MAP, landPath, servedPath, pins } from '../lib/map';
+import { ui, routes, type Lang } from '../data/i18n';
+interface Props { lang: Lang; heading?: boolean }
+const { lang, heading = true } = Astro.props;
+const es = lang === 'es';
+const names = areas.map((a) => a.name);
+const row = [...names, ...names].join(' · ');
+---
+<section class="map-sec" id="areas">
+  {heading && (
+    <div class="drift" aria-hidden="true">
+      <p data-drift="-1">{row}</p>
+      <p class="outline" data-drift="1">{[...names].reverse().concat([...names].reverse()).join(' · ')}</p>
+    </div>
+  )}
+  <div class="wrap grid">
+    <div>
+      <p class="kicker"><Icon name="star" /> {ui.nav.areas[lang]}</p>
+      <h2 class="h2">{es ? 'Vamos a donde estás.' : 'We come to you.'}</h2>
+      <p class="lead">{es ? 'Sur de Florida y toda la Florida. ¿No ves tu zona? Pregúntanos.' : 'South Florida and all of Florida. Don’t see your area? Just ask.'}</p>
+      <ul class="cities" data-cities>
+        {areas.map((a) => <li><a href={areaUrl(a, lang)} data-pin-link={a.id}>{a.name}</a></li>)}
+      </ul>
+      {heading && <a class="all" href={routes.areas[lang]}>{ui.common.allAreas[lang]} <Icon name="arrow" /></a>}
+    </div>
+    <figure class="map" data-up>
+      <svg viewBox={`0 0 ${MAP.w} ${MAP.h}`} role="img" aria-label={es ? 'Mapa del sur de Florida con las zonas donde limpiamos' : 'Map of South Florida with the areas we clean'}>
+        <rect width={MAP.w} height={MAP.h} class="water" rx="26" />
+        <path d={landPath} class="land" />
+        <path d={servedPath} class="served" />
+        {pins.map((p) => (
+          <a href={areaUrl(areas.find((a) => a.id === p.id)!, lang)} class="pin" data-pin={p.id} aria-label={p.name}>
+            <circle class="halo" cx={p.x} cy={p.y} r="16" />
+            <circle class="core" cx={p.x} cy={p.y} r="6.500" />
+            <text x={p.x + (p.right ? 13 : -13)} y={p.y + 5} text-anchor={p.right ? 'start' : 'end'}>{p.name}</text>
+          </a>
+        ))}
+      </svg>
+    </figure>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-pin-link]').forEach((link) => {
+    const pin = document.querySelector(`[data-pin="${link.dataset.pinLink}"]`);
+    const on = () => pin?.classList.add('is-on');
+    const off = () => pin?.classList.remove('is-on');
+    link.addEventListener('pointerenter', on);
+    link.addEventListener('pointerleave', off);
+    link.addEventListener('focus', on);
+    link.addEventListener('blur', off);
+  });
+</script>
+
+<style>
+  .map-sec { background: var(--sea-100); padding-block: clamp(60px, 8vw, 100px) clamp(72px, 10vw, 130px); overflow: hidden; }
+  .drift { margin-bottom: clamp(40px, 6vw, 80px); }
+  .drift p { white-space: nowrap; font-family: var(--display); font-weight: 600; font-size: clamp(2.8rem, 6.4vw, 5.8rem); line-height: 1.05; }
+  .drift .outline { color: transparent; -webkit-text-stroke: 1px var(--sea-700); margin-left: -30%; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 6vw, 72px); align-items: center; }
+  h2 { margin: 12px 0 14px; }
+  .cities { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+  .cities a { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 16px; background: var(--cream); border: 1.5px solid transparent; border-radius: 999px; font-weight: 600; text-decoration: none; transition: border-color 0.2s, background 0.2s; }
+  .cities a:hover, .cities a:focus-visible { border-color: var(--sea-700); background: #fff; }
+  .all { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; font-weight: 600; color: var(--sea-700); text-decoration: none; padding-block: 8px; }
+  .all :global(svg) { width: 18px; height: 18px; }
+  .map { margin: 0; }
+  .map svg { width: 100%; height: auto; border-radius: 26px; }
+  .water { fill: var(--sea-200); }
+  .land { fill: #f7efe1; stroke: #e3d4bc; stroke-width: 0.8; }
+  .served { fill: #fffaf1; stroke: #cdb999; stroke-width: 1; stroke-linejoin: round; }
+  .core { fill: var(--sea-700); stroke: #fff; stroke-width: 2; }
+  .halo { fill: var(--sea-700); opacity: 0; transition: opacity 0.2s; }
+  .pin { cursor: pointer; }
+  .pin text { font: 600 14px var(--body); fill: var(--ink); paint-order: stroke; stroke: rgb(255 250 241 / 0.85); stroke-width: 3px; pointer-events: none; transition: fill 0.2s; }
+  .pin:hover .halo, .pin.is-on .halo, .pin:focus-visible .halo { opacity: 0.25; }
+  .pin:hover text, .pin.is-on text, .pin:focus-visible text { fill: var(--sea-700); }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } .map { max-width: 460px; } }
+</style>
