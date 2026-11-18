@@ -5,7 +5,7 @@ Fotos de archivo encontradas con Openverse, con licencia CC0 o marca de dominio 
 | Archivo | Título | Autor | Fuente | Licencia | Enlace |
 |---|---|---|---|---|---|
 | hero-home.jpg | Living room | Foto Miki Digital | flickr | PDM 1.0 | https://www.flickr.com/photos/96511847@N04/9200612133 |
-| room-kitchen.jpg | Housing improvement project goal 1: two-bedroom unit, kitchen | YellowstoneNPS | flickr | PDM 1.0 | https://www.flickr.com/photos/80223459@N05/52067013963 |
+| room-kitchen.jpg | Cocina | AJ Cleaning Home | Cliente | Uso autorizado por el cliente | — |
 | room-bathroom.jpg | Modern home interior | sin autor indicado | rawpixel | CC0 1.0 | https://www.rawpixel.com/image/9658355/modern-home-interior |
 | room-bedroom.jpg | Housing improvement project goal 1: one-bedroom unit, bedroom | YellowstoneNPS | flickr | PDM 1.0 | https://www.flickr.com/photos/80223459@N05/52066993881 |
 | room-living.jpg | Housing improvement project goal 1: two-bedroom unit, living room | YellowstoneNPS | flickr | PDM 1.0 | https://www.flickr.com/photos/80223459@N05/52067485855 |
@@ -17,6 +17,6 @@ Fotos de archivo encontradas con Openverse, con licencia CC0 o marca de dominio 
 | service-realtor.jpg | Empty apartment in Berlin with fitted kitchen and chair | SmashingIt99 | wikimedia | CC0 1.0 | https://commons.wikimedia.org/w/index.php?curid=147049469 |
 | service-construction.jpg | Empty apartment in Berlin with white desk, chair and ladder 01 | SmashingIt99 | wikimedia | CC0 1.0 | https://commons.wikimedia.org/w/index.php?curid=147049467 |
 | service-laundry.jpg | Changing the laundry | Kim Siever | flickr | PDM 1.0 | https://www.flickr.com/photos/57873306@N00/3673853584 |
-| service-addons.jpg | Modern Kitchen | Foto Miki Digital | flickr | PDM 1.0 | https://www.flickr.com/photos/96511847@N04/9200419155 |
+| service-addons.jpg | Cocina gris | AJ Cleaning Home | Cliente | Uso autorizado por el cliente | — |
 
 Nota: `hero-home.jpg` está escalada desde 1024 px, la mayor copia descargable. Conviene reemplazarla por una versión de mayor resolución.

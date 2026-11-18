@@ -56,27 +56,27 @@ const row = [...names, ...names].join(' · ');
 </script>
 
 <style>
-  .map-sec { background: var(--sea-100); padding-block: clamp(60px, 8vw, 100px) clamp(72px, 10vw, 130px); overflow: hidden; }
+  .map-sec { background: var(--blush-100); padding-block: clamp(60px, 8vw, 100px) clamp(72px, 10vw, 130px); overflow: hidden; }
   .drift { margin-bottom: clamp(40px, 6vw, 80px); }
   .drift p { white-space: nowrap; font-family: var(--display); font-weight: 600; font-size: clamp(2.8rem, 6.4vw, 5.8rem); line-height: 1.05; }
-  .drift .outline { color: transparent; -webkit-text-stroke: 1px var(--sea-700); margin-left: -30%; }
+  .drift .outline { color: transparent; -webkit-text-stroke: 1px var(--blush-700); margin-left: -30%; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 6vw, 72px); align-items: center; }
   h2 { margin: 12px 0 14px; }
   .cities { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
   .cities a { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 16px; background: var(--cream); border: 1.5px solid transparent; border-radius: 999px; font-weight: 600; text-decoration: none; transition: border-color 0.2s, background 0.2s; }
-  .cities a:hover, .cities a:focus-visible { border-color: var(--sea-700); background: #fff; }
-  .all { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; font-weight: 600; color: var(--sea-700); text-decoration: none; padding-block: 8px; }
+  .cities a:hover, .cities a:focus-visible { border-color: var(--blush-700); background: #fff; }
+  .all { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; font-weight: 600; color: var(--blush-700); text-decoration: none; padding-block: 8px; }
   .all :global(svg) { width: 18px; height: 18px; }
   .map { margin: 0; }
   .map svg { width: 100%; height: auto; border-radius: 26px; }
-  .water { fill: var(--sea-200); }
+  .water { fill: var(--blush-200); }
   .land { fill: #f7efe1; stroke: #e3d4bc; stroke-width: 0.8; }
   .served { fill: #fffaf1; stroke: #cdb999; stroke-width: 1; stroke-linejoin: round; }
-  .core { fill: var(--sea-700); stroke: #fff; stroke-width: 2; }
-  .halo { fill: var(--sea-700); opacity: 0; transition: opacity 0.2s; }
+  .core { fill: var(--blush-700); stroke: #fff; stroke-width: 2; }
+  .halo { fill: var(--blush-700); opacity: 0; transition: opacity 0.2s; }
   .pin { cursor: pointer; }
   .pin text { font: 600 14px var(--body); fill: var(--ink); paint-order: stroke; stroke: rgb(255 250 241 / 0.85); stroke-width: 3px; pointer-events: none; transition: fill 0.2s; }
   .pin:hover .halo, .pin.is-on .halo, .pin:focus-visible .halo { opacity: 0.25; }
-  .pin:hover text, .pin.is-on text, .pin:focus-visible text { fill: var(--sea-700); }
+  .pin:hover text, .pin.is-on text, .pin:focus-visible text { fill: var(--blush-700); }
   @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } .map { max-width: 460px; } }
 </style>

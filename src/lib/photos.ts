@@ -1,4 +1,7 @@
-/** Fotos de ambiente: de archivo, no trabajos del negocio. Origen en src/assets/photos/CREDITS.md. */
+/**
+ * Fotos del sitio. room-kitchen y service-addons son del cliente (AJ Cleaning Home);
+ * las demás son de archivo, no trabajos del negocio. Origen en src/assets/photos/CREDITS.md.
+ */
 import type { L } from '../data/i18n';
 import heroApartment from '../assets/photos/hero-home.jpg';
 import roomKitchen from '../assets/photos/room-kitchen.jpg';
@@ -26,7 +29,7 @@ export const heroPhoto: Photo = {
 };
 
 export const roomPhotos: Record<string, Photo> = {
-  kitchen: { src: roomKitchen, alt: { en: 'Clean kitchen with an island, wood cabinets and a wood floor', es: 'Cocina limpia con isla, gabinetes y piso de madera' } },
+  kitchen: { src: roomKitchen, alt: { en: 'Clean kitchen with oak cabinets, a white gas stove and a wood floor', es: 'Cocina limpia con gabinetes de roble, estufa de gas blanca y piso de madera' } },
   bath: { src: roomBathroom, alt: { en: 'Clean bathroom with vanity, toilet and tiled shower', es: 'Baño limpio con lavamanos, inodoro y ducha de baldosa' } },
   bedroom: { src: roomBedroom, alt: { en: 'Bedroom with a made bed and clean carpet', es: 'Habitación con la cama hecha y la alfombra limpia' } },
   living: { src: roomLiving, alt: { en: 'Living room with sofa, coffee table and wood floor', es: 'Sala con sofá, mesa de centro y piso de madera' } },
@@ -41,5 +44,5 @@ export const servicePhotos: Record<string, Photo> = {
   realtor: { src: realtor, alt: { en: 'Empty apartment with a fitted kitchen, ready to show', es: 'Apartamento vacío con cocina integral, listo para mostrar' } },
   construction: { src: construction, alt: { en: 'Apartment with a ladder still inside after a remodel', es: 'Apartamento con una escalera adentro después de una remodelación' } },
   laundry: { src: laundry, alt: { en: 'Hand loading clothes into a washing machine', es: 'Mano metiendo ropa en una lavadora' } },
-  addons: { src: addons, alt: { en: 'Kitchen with stainless steel appliances', es: 'Cocina con electrodomésticos de acero inoxidable' } },
+  addons: { src: addons, alt: { en: 'Kitchen with gray cabinets, a stainless steel stove and microwave', es: 'Cocina con gabinetes grises, estufa y microondas de acero inoxidable' } },
 };

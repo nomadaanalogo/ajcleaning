@@ -219,7 +219,7 @@ function init(track: HTMLElement, hero: HTMLElement) {
   /* ---------- Destellos: la estrella del logo ---------- */
   type Spark = { x: number; y: number; vx: number; vy: number; life: number; ttl: number; size: number; color: string; spin: number };
   const sparks: Spark[] = [];
-  const COLORS = ['#ffffff', '#ffffff', '#c8964f', '#98d4cc'];
+  const COLORS = ['#ffffff', '#ffffff', '#c8964f', '#e4b3a5'];
   let sparkRaf = 0;
 
   function emit(x: number, y: number, n: number) {

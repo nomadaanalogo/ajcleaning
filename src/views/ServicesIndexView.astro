@@ -51,11 +51,11 @@ const es = lang === 'es';
 <style>
   .list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
   .list a { display: flex; flex-direction: column; height: 100%; padding: 26px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; text-decoration: none; transition: border-color 0.2s, transform 0.4s var(--ease); }
-  .list a:hover { border-color: var(--sea-700); transform: translateY(-4px); }
+  .list a:hover { border-color: var(--blush-700); transform: translateY(-4px); }
   .list :global(.pic) { width: calc(100% + 52px); max-width: none; margin: -26px -26px 0; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
   h2 { margin-top: 16px; font-family: var(--display); font-size: 2rem; line-height: 1.02; }
   .list p { margin: 10px 0 16px; color: var(--ink-soft); }
-  .more { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; font-weight: 600; color: var(--sea-700); }
+  .more { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; font-weight: 600; color: var(--blush-700); }
   .more :global(svg) { width: 17px; height: 17px; }
   @media (max-width: 900px) { .list { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 580px) { .list { grid-template-columns: 1fr; } }

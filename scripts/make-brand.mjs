@@ -28,13 +28,13 @@ await sharp(round).resize(48).png().toFile('public/favicon.png');
 const logo = await sharp(round).resize(400).png().toBuffer();
 const star = (x, y, r, fill) => `<path transform="translate(${x} ${y}) scale(${r / 12})" d="M0-12C1.5-3 3-1.5 12 0 3 1.5 1.5 3 0 12-1.5 3-3 1.5-12 0-3-1.5-1.5-3 0-12Z" fill="${fill}"/>`;
 const bg = Buffer.from(`<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBF6EF"/><stop offset="1" stop-color="#CFEAE6"/></linearGradient></defs>
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBF6EF"/><stop offset="1" stop-color="#F6DDD5"/></linearGradient></defs>
   <rect width="1200" height="630" fill="url(#g)"/>
-  ${star(1080, 110, 34, '#C8964F')}${star(1140, 200, 16, '#C8964F')}${star(560, 545, 20, '#1E6A6D')}
+  ${star(1080, 110, 34, '#C8964F')}${star(1140, 200, 16, '#C8964F')}${star(560, 545, 20, '#C8964F')}
   <text x="520" y="250" font-family="Georgia, serif" font-size="74" fill="#3C2415">Come home</text>
   <text x="520" y="335" font-family="Georgia, serif" font-size="74" fill="#3C2415">to clean.</text>
-  <text x="522" y="410" font-family="Arial, sans-serif" font-size="32" fill="#17595C">House cleaning in South Florida</text>
-  <text x="522" y="456" font-family="Arial, sans-serif" font-size="32" fill="#17595C">Weekly. Spotless. Done for you.</text>
+  <text x="522" y="410" font-family="Arial, sans-serif" font-size="32" fill="#8e4f3e">House cleaning in South Florida</text>
+  <text x="522" y="456" font-family="Arial, sans-serif" font-size="32" fill="#8e4f3e">Weekly. Spotless. Done for you.</text>
 </svg>`);
 await sharp(bg).composite([{ input: logo, left: 70, top: 115 }]).jpeg({ quality: 88 }).toFile('public/brand/og.jpg');
 console.log('Listo: public/brand, favicon.png, apple-touch-icon.png');

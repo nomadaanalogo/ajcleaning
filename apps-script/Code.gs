@@ -130,7 +130,7 @@ function getSheet() {
     sheet
       .getRange(1, 1, 1, HEADERS.length)
       .setFontWeight("bold")
-      .setBackground("#17595c")
+      .setBackground("#8e4f3e")
       .setFontColor("#ffffff");
     sheet.setFrozenRows(1);
     sheet.setColumnWidth(4, 300);
@@ -180,7 +180,7 @@ function sendAutoReply(lead) {
   const html = `
   <div style="margin:0;padding:32px 16px;background:#fbf6ef;font-family:Arial,Helvetica,sans-serif;">
     <div style="max-width:540px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;">
-      <div style="background:#0f3a3d;padding:22px 28px;font-family:Georgia,serif;font-size:22px;color:#ffffff;">${CONFIG.BUSINESS_NAME}</div>
+      <div style="background:#4a2a20;padding:22px 28px;font-family:Georgia,serif;font-size:22px;color:#ffffff;">${CONFIG.BUSINESS_NAME}</div>
       <div style="padding:30px 28px;color:#3c2415;">
         <h1 style="margin:0 0 14px;font-family:Georgia,serif;font-size:26px;font-weight:normal;">${escapeHtml(lines[0])}</h1>
         <p style="margin:0 0 8px;font-size:16px;line-height:1.5;">${escapeHtml(lines[1])}</p>
@@ -224,7 +224,7 @@ function notifyBusiness(lead) {
     ${summaryRow("Extras", lead.extras)}
     ${summaryRow("Zona", lead.zona)}
     <p style="margin:24px 0 0;">
-      <a href="${sheetUrl}" style="display:inline-block;background:#17595c;color:#fff;text-decoration:none;font-weight:bold;padding:12px 20px;border-radius:999px;">Abrir la hoja</a>
+      <a href="${sheetUrl}" style="display:inline-block;background:#8e4f3e;color:#fff;text-decoration:none;font-weight:bold;padding:12px 20px;border-radius:999px;">Abrir la hoja</a>
     </p>
   </div>`;
 

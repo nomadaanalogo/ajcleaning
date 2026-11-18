@@ -40,7 +40,7 @@ const es = lang === 'es';
   .rail { background: var(--cream); padding-block: clamp(72px, 9vw, 112px) 56px; }
   .rail-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 16px 40px; margin-bottom: 32px; }
   h2 { margin-top: 12px; }
-  .all { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; text-decoration: none; color: var(--sea-700); padding-block: 10px; }
+  .all { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; text-decoration: none; color: var(--blush-700); padding-block: 10px; }
   .all :global(svg) { width: 18px; height: 18px; }
   .viewport { overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-block: 6px 16px; }
   .viewport::-webkit-scrollbar { display: none; }
@@ -48,15 +48,15 @@ const es = lang === 'es';
   .svc { width: clamp(270px, 28vw, 370px); flex: none; scroll-snap-align: center; }
   .svc a { position: relative; display: flex; flex-direction: column; height: 100%; text-decoration: none; border-radius: var(--radius); overflow: hidden; transition: transform 0.45s var(--ease), box-shadow 0.45s; }
   .svc a:hover { transform: translateY(-6px); box-shadow: 0 28px 44px -30px rgb(60 36 21 / 0.55); }
-  .svc--sea a { background: var(--sea-200); }
+  .svc--blush a { background: var(--blush-200); }
   .svc--cream a { background: #f7eddd; }
   .svc--sand a { background: var(--sand); }
-  .svc--mist a { background: var(--sea-50); box-shadow: inset 0 0 0 1px var(--sea-200); }
+  .svc--mist a { background: var(--blush-50); box-shadow: inset 0 0 0 1px var(--blush-200); }
   .svc :global(.pic) { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
   .body { display: flex; flex-direction: column; flex: 1; padding: 20px 24px 24px; }
   h3 { font-family: var(--display); font-size: 1.95rem; line-height: 1; letter-spacing: -0.01em; }
   .svc p { margin-top: 8px; color: var(--ink-soft); }
-  .more { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 14px; font-weight: 600; color: var(--sea-800); }
+  .more { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 14px; font-weight: 600; color: var(--blush-800); }
   .more :global(svg) { width: 17px; height: 17px; transition: translate 0.3s var(--ease); }
   .svc a:hover .more :global(svg) { translate: 4px 0; }
 

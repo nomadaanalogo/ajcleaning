@@ -36,7 +36,7 @@ function init(panel: HTMLElement) {
     line.setAttribute('d', current.path);
     area.setAttribute('d', `${current.path}L${chartX(CHART.weeks)} ${chartY(0)}L${chartX(0)} ${chartY(0)}Z`);
     dots.innerHTML = cleanWeeks(current.interval)
-      .map((w) => `<circle class="dot" cx="${chartX(w)}" cy="${chartY(1)}" r="4.5" style="fill:#bfe5df;stroke:#0f3a3d;stroke-width:2"></circle>`)
+      .map((w) => `<circle class="dot" cx="${chartX(w)}" cy="${chartY(1)}" r="4.5" style="fill:#8e4f3e;stroke:#fbe7d6;stroke-width:2"></circle>`)
       .join('');
 
     q('[data-rec-caption]').textContent = current.caption;

@@ -58,7 +58,7 @@ const tickWeeks = [0, 4, 8, 12];
           <figcaption class="chart-title">{es ? 'Qué tan limpia se mantiene tu casa en 12 semanas' : 'How clean your home stays over 12 weeks'}</figcaption>
           <svg viewBox={`0 0 ${CHART.w} ${CHART.h}`} role="img" aria-label={es ? 'Ilustración: con limpieza semanal la casa se mantiene limpia; con una sola limpieza, cae con el tiempo.' : 'Illustration: with weekly cleaning the home stays clean; with one clean it declines over time.'}>
             <defs>
-              <linearGradient id="fresh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#98D4CC" stop-opacity="0.34" /><stop offset="1" stop-color="#98D4CC" stop-opacity="0" /></linearGradient>
+              <linearGradient id="fresh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8e4f3e" stop-opacity="0.2" /><stop offset="1" stop-color="#8e4f3e" stop-opacity="0" /></linearGradient>
             </defs>
             <line class="grid" x1={CHART.left} x2={CHART.w - CHART.right} y1={chartY(1)} y2={chartY(1)} />
             <line class="base" x1={CHART.left} x2={CHART.w - CHART.right} y1={chartY(0)} y2={chartY(0)} />
@@ -88,7 +88,7 @@ const tickWeeks = [0, 4, 8, 12];
           <div class="dots" data-year>{Array.from({ length: 52 }, (_, i) => <i class:list={[{ on: (i % start.interval) === 0 }]}></i>)}</div>
         </div>
 
-        <a class="btn btn--cream" href={quoteHref(lang)} data-track="cta_click">{es ? 'Quiero mi plan' : 'Start my plan'} <Icon name="arrow" /></a>
+        <a class="btn btn--primary" href={quoteHref(lang)} data-track="cta_click">{es ? 'Quiero mi plan' : 'Start my plan'} <Icon name="arrow" /></a>
       </div>
     </div>
 
@@ -105,47 +105,47 @@ const tickWeeks = [0, 4, 8, 12];
 </script>
 
 <style>
-  .rec { position: relative; background: var(--sea-900); color: #f2f9f7; padding-block: clamp(76px, 10vw, 140px); overflow: hidden; }
+  .rec { position: relative; background: var(--peach); color: var(--ink); padding-block: clamp(76px, 10vw, 140px); overflow: hidden; }
   .rec-head h2 { margin-top: 14px; }
-  .rec-head em { font-style: italic; color: var(--sea-200); }
-  .rec .kicker { color: var(--sea-200); }
+  .rec-head em { font-style: italic; color: var(--blush-700); }
+  .rec .kicker { color: var(--blush-700); }
   .rec-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); margin-top: clamp(32px, 4vw, 56px); align-items: center; }
 
   .plan-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-  .tab { min-height: 46px; padding: 8px 18px; background: rgb(255 255 255 / 0.07); border: 1.5px solid rgb(255 255 255 / 0.2); border-radius: 999px; color: #f2f9f7; font-weight: 600; cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s; }
-  .tab:hover { border-color: var(--sea-200); }
-  .tab.is-on { background: var(--sea-200); color: var(--sea-900); border-color: var(--sea-200); }
-  .tab:focus-visible { outline-color: #f2d49c; }
+  .tab { min-height: 46px; padding: 8px 18px; background: #fff; border: 1.5px solid var(--line); border-radius: 999px; color: var(--ink); font-weight: 600; cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s; }
+  .tab:hover { border-color: var(--blush-700); }
+  .tab.is-on { background: var(--blush-700); color: #fff; border-color: var(--blush-700); }
+  .tab:focus-visible { outline-color: var(--blush-700); }
 
   .chart { position: relative; margin: 0; }
   .chart-title { font-weight: 600; margin-bottom: 10px; }
   .chart svg { width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
-  .grid { stroke: rgb(255 255 255 / 0.1); }
-  .base { stroke: rgb(255 255 255 / 0.28); }
-  .limit { stroke: #f2d49c; stroke-width: 1.5; stroke-dasharray: 5 6; }
-  .lbl { fill: #bcd9d4; font: 500 12px var(--body); }
-  .line { fill: none; stroke: var(--sea-200); stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
-  .dot { fill: var(--sea-200); stroke: var(--sea-900); stroke-width: 2; }
-  .cross { stroke: rgb(255 255 255 / 0.4); opacity: 0; }
-  .cursor { fill: #f2d49c; stroke: var(--sea-900); stroke-width: 2; opacity: 0; }
-  .tip { position: absolute; top: 34px; padding: 6px 12px; background: var(--cream); color: var(--ink); font-size: 0.86rem; font-weight: 600; border-radius: 10px; white-space: nowrap; pointer-events: none; box-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.6); }
-  .disclaimer { margin-top: 6px; font-size: 0.82rem; color: #bcd9d4; }
+  .grid { stroke: rgb(60 36 21 / 0.1); }
+  .base { stroke: rgb(60 36 21 / 0.25); }
+  .limit { stroke: var(--gold); stroke-width: 1.5; stroke-dasharray: 5 6; }
+  .lbl { fill: var(--ink-soft); font: 500 12px var(--body); }
+  .line { fill: none; stroke: var(--blush-700); stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
+  .dot { fill: var(--blush-700); stroke: var(--peach); stroke-width: 2; }
+  .cross { stroke: rgb(60 36 21 / 0.35); opacity: 0; }
+  .cursor { fill: var(--gold); stroke: var(--peach); stroke-width: 2; opacity: 0; }
+  .tip { position: absolute; top: 34px; padding: 6px 12px; background: var(--cream); color: var(--ink); font-size: 0.86rem; font-weight: 600; border-radius: 10px; white-space: nowrap; pointer-events: none; box-shadow: 0 10px 24px -12px rgb(60 36 21 / 0.45); }
+  .disclaimer { margin-top: 6px; font-size: 0.82rem; color: var(--ink-soft); }
 
   .n-caption { font-family: var(--display); font-weight: 600; font-size: clamp(1.9rem, 3vw, 2.7rem); line-height: 1.05; min-height: 2.1em; }
   .n-visits { margin-top: 14px; display: flex; align-items: baseline; gap: 10px; }
   .n-visits strong { font-family: var(--display); font-weight: 600; font-size: clamp(4.6rem, 8vw, 7rem); line-height: 0.95; }
-  .n-visits span { color: #bcd9d4; }
+  .n-visits span { color: var(--ink-soft); }
   .n-save { display: inline-flex; align-items: center; gap: 8px; margin-top: 12px; padding: 8px 14px; background: #f2d49c; color: var(--ink); border-radius: 12px; font-weight: 700; line-height: 1.2; }
   .n-save :global(.star) { width: 14px; height: 14px; fill: var(--brown); flex: none; }
 
   .year { margin: 24px 0; }
   .dots { display: grid; grid-template-columns: repeat(26, 1fr); gap: 4px; max-width: 360px; }
-  .dots i { aspect-ratio: 1; border-radius: 50%; background: rgb(255 255 255 / 0.13); transition: background 0.35s; transition-delay: calc(var(--i, 0) * 6ms); }
-  .dots i.on { background: var(--sea-200); }
+  .dots i { aspect-ratio: 1; border-radius: 50%; background: rgb(60 36 21 / 0.1); transition: background 0.35s; transition-delay: calc(var(--i, 0) * 6ms); }
+  .dots i.on { background: var(--blush-700); }
 
-  .perks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: clamp(36px, 5vw, 64px); padding-top: 28px; border-top: 1px solid rgb(255 255 255 / 0.15); }
-  .perks b { display: block; font-family: var(--display); font-size: 1.6rem; font-weight: 600; line-height: 1.1; color: #fff; }
-  .perks li { color: #bcd9d4; }
+  .perks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: clamp(36px, 5vw, 64px); padding-top: 28px; border-top: 1px solid var(--line); }
+  .perks b { display: block; font-family: var(--display); font-size: 1.6rem; font-weight: 600; line-height: 1.1; color: var(--ink); }
+  .perks li { color: var(--ink-soft); }
 
   @media (max-width: 900px) {
     .rec-grid { grid-template-columns: 1fr; }

@@ -7,7 +7,7 @@ export type Service = {
   id: string;
   slug: L;
   icon: IconName;
-  tint: 'sea' | 'cream' | 'sand' | 'mist';
+  tint: 'blush' | 'cream' | 'sand' | 'mist';
   name: L;
   tagline: L;
   title: L;
@@ -30,7 +30,7 @@ export const services: Service[] = [
     id: 'recurring',
     slug: { en: 'recurring-house-cleaning', es: 'limpieza-recurrente' },
     icon: 'calendar',
-    tint: 'sea',
+    tint: 'blush',
     name: { en: 'Recurring cleaning', es: 'Limpieza recurrente' },
     tagline: { en: 'Your home. Always ready.', es: 'Tu casa. Siempre lista.' },
     title: { en: 'Weekly & Biweekly House Cleaning in Miami | AJ Cleaning Home', es: 'Limpieza de casas semanal y quincenal en Miami | AJ Cleaning Home' },
@@ -196,7 +196,7 @@ export const services: Service[] = [
     id: 'office',
     slug: { en: 'office-cleaning', es: 'limpieza-de-oficinas' },
     icon: 'office',
-    tint: 'sea',
+    tint: 'blush',
     name: { en: 'Office cleaning', es: 'Limpieza de oficinas' },
     tagline: { en: 'Monday-morning ready.', es: 'Lista para el lunes.' },
     title: { en: 'Office Cleaning in Miami & Fort Lauderdale | AJ Cleaning Home', es: 'Limpieza de oficinas en Miami y Fort Lauderdale | AJ Cleaning Home' },
@@ -354,7 +354,7 @@ export const services: Service[] = [
     id: 'addons',
     slug: { en: 'windows-carpet-appliance-cleaning', es: 'ventanas-alfombras-electrodomesticos' },
     icon: 'window',
-    tint: 'sea',
+    tint: 'blush',
     name: { en: 'Windows, carpets & appliances', es: 'Ventanas, alfombras y electrodomésticos' },
     tagline: { en: 'The details people skip.', es: 'Los detalles que otros saltan.' },
     title: { en: 'Window, Carpet & Appliance Cleaning in Miami | AJ Cleaning Home', es: 'Ventanas, alfombras y electrodomésticos | AJ Cleaning Home' },
