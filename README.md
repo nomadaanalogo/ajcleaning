@@ -37,17 +37,18 @@ Copie `.env.example` a `.env`:
 
 **Sin esto no se puede publicar**
 
-- [ ] Número de WhatsApp en `src/data/site.ts`. Hoy los botones abren WhatsApp sin destinatario.
+- [ ] Confirmar que el (305) 680-4609 tiene WhatsApp. Está puesto para llamadas y WhatsApp en `src/data/site.ts`.
 - [ ] Dominio real en `astro.config.mjs` y `public/robots.txt`. El actual es un supuesto.
 - [ ] Instalar la hoja de Drive con la cuenta de Google de AJ (`apps-script/README.md`) y poner la URL en `PUBLIC_FORM_ENDPOINT`. Sin esto, las solicitudes no se guardan.
 - [ ] Correo que recibe los avisos: `NOTIFY_EMAIL` en `apps-script/Code.gs`.
-- [ ] Revisión de abogado de los términos y condiciones (son un borrador).
+- [ ] Revisión de abogado de los términos y condiciones.
+- [ ] Que el negocio confirme los plazos que fijan los términos: daños avisados dentro de 48 horas, cotizaciones válidas 30 días y devolución de la visita si AJ reprograma y el cliente no acepta la nueva fecha.
 
 **Contenido que el negocio debe enviar o aprobar**
 
 - [ ] Qué incluye cada servicio. Solo la lista por cuarto es real; los puntos de profunda, mudanza, post-construcción, Airbnb, oficinas y realtors son un borrador.
 - [ ] Si cobran recargo por distancia o a qué distancia llegan.
-- [ ] Política de cancelación, reembolso del depósito y garantía. Los términos solo dicen que se acuerdan al confirmar la reserva.
+- [ ] Política de cancelación y reembolso del depósito. Los términos dicen que se acuerdan al confirmar cada reserva.
 - [ ] Fotos reales del equipo y de antes y después. Las actuales son de archivo (origen en `src/assets/photos/CREDITS.md`): sirven de ambiente, no deben presentarse como trabajos de AJ.
 - [ ] Verificar a mano la licencia de las fotos de rawpixel y StockSnap: sus páginas bloquean la verificación automática.
 - [ ] Reseñas reales. No hay sección de reseñas ni estrellas en el schema hasta tenerlas.

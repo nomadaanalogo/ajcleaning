@@ -1,6 +1,6 @@
 ---
 import Icon from '../Icon.astro';
-import { whatsappUrl } from '../../data/site';
+import { whatsappUrl, site } from '../../data/site';
 import { ui, quoteHref, type Lang } from '../../data/i18n';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -16,6 +16,7 @@ const es = lang === 'es';
     <div class="cta-row">
       <a class="btn btn--primary" href={quoteHref(lang)} data-track="cta_click">{ui.common.getQuote[lang]} <Icon name="arrow" /></a>
       <a class="btn btn--line" href={whatsappUrl(ui.common.waHello[lang])} target="_blank" rel="noopener" data-track="whatsapp_click"><Icon name="whatsapp" /> WhatsApp</a>
+      {site.phone && <a class="btn btn--line" href={`tel:${site.phone}`} data-track="call_click"><Icon name="phone" /> {site.phoneDisplay}</a>}
     </div>
   </div>
 </section>

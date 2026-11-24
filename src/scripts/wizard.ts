@@ -98,6 +98,7 @@ function init(form: HTMLFormElement, cfg: Config) {
     const name = (e.target as HTMLInputElement).name;
     const err = section.querySelector<HTMLElement>(`[data-err="${name}"]`);
     if (err && val(name)) err.hidden = true;
+    if (name === 'consent' && val(name)) section.querySelector('.consent-wrap')?.classList.remove('is-bad');
   });
 
   // Tocar una propiedad avanza, aunque ya estuviera marcada. Se escucha en la tarjeta y no en
@@ -118,13 +119,18 @@ function init(form: HTMLFormElement, cfg: Config) {
   });
 
   /* ---------- Validación de los datos ---------- */
+  const phoneDigits = () => text('phone').replace(/\D/g, '');
+  // 10 dígitos (EE. UU.), 11 si empieza por 1, o un número internacional de hasta 15.
+  const phoneOk = (d: string) => d.length === 10 || (d.length === 11 && d.startsWith('1')) || (d.length >= 11 && d.length <= 15 && text('phone').startsWith('+'));
+
   function validateContact() {
-    let firstBad: HTMLInputElement | null = null;
+    let firstBad: HTMLElement | null = null;
     for (const el of $$<HTMLInputElement>('.field input')) {
       const value = el.value.trim();
       let msg = '';
-      if (!value) msg = S.required;
+      if (!value) msg = el.hasAttribute('data-optional') ? '' : S.required;
       else if (el.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) msg = S.badEmail;
+      else if (el.type === 'tel' && !phoneOk(phoneDigits())) msg = S.badPhone;
       const field = el.closest('.field')!;
       const err = field.querySelector<HTMLElement>('.err')!;
       field.classList.toggle('is-bad', !!msg);
@@ -133,9 +139,52 @@ function init(form: HTMLFormElement, cfg: Config) {
       err.hidden = !msg;
       if (msg && !firstBad) firstBad = el;
     }
+    const consent = form.querySelector<HTMLInputElement>('[name="consent"]')!;
+    $('[data-err="consent"]').hidden = consent.checked;
+    consent.closest('.consent-wrap')!.classList.toggle('is-bad', !consent.checked);
+    if (!consent.checked && !firstBad) firstBad = consent;
     if (firstBad) firstBad.focus();
     return !firstBad;
   }
+
+  /* ---------- Verificación antirobots ----------
+   * 1. Pide al script de Google un reto firmado (incluye la hora: el servidor sabe cuánto tardó la persona).
+   * 2. Lo resuelve con una prueba de trabajo: buscar un número que, junto al reto, dé un SHA-256
+   *    que empiece con BITS ceros. Al navegador le toma menos de un segundo; a un robot que envía
+   *    miles de solicitudes le cuesta caro. El servidor lo comprueba y no acepta el mismo reto dos veces.
+   * Se arranca apenas la persona toca el formulario, así ya está lista al enviar. */
+  const BITS = 14;
+  let proof: Promise<{ reto: string; prueba: string }> | null = null;
+
+  function startProof() {
+    if (proof || !cfg.endpoint || !window.crypto?.subtle) return;
+    proof = (async () => {
+      const res = await fetch(`${cfg.endpoint}?accion=reto`, { method: 'GET' });
+      const { reto } = (await res.json()) as { reto?: string };
+      if (!reto) throw new Error('sin reto');
+      const enc = new TextEncoder();
+      for (let n = 0; n < 5_000_000; n++) {
+        const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(`${reto}:${n}`)));
+        if (leadingZeroBits(hash) >= BITS) return { reto, prueba: String(n) };
+      }
+      throw new Error('sin prueba');
+    })();
+    // Si falla (sin conexión, script caído), se vuelve a intentar al enviar.
+    proof.catch(() => { proof = null; });
+  }
+
+  function leadingZeroBits(bytes: Uint8Array) {
+    let bits = 0;
+    for (const b of bytes) {
+      if (b === 0) { bits += 8; continue; }
+      bits += Math.clz32(b) - 24;
+      break;
+    }
+    return bits;
+  }
+
+  form.addEventListener('pointerdown', startProof, { once: true });
+  form.addEventListener('focusin', startProof, { once: true });
 
   /* ---------- Envío ---------- */
   function whatsappFallback() {
@@ -145,6 +194,7 @@ function init(form: HTMLFormElement, cfg: Config) {
       '',
       `${S.wName}: ${text('name')}`,
       `Email: ${text('email')}`,
+      ...(text('phone') ? [`${S.wPhone}: ${text('phone')}`] : []),
       `${S.wAddress}: ${text('address')}`,
       `${S.wProperty}: ${l.property[val('property')] ?? ''}`,
       `${S.wSize}: ${sizeText(l)}`,
@@ -179,6 +229,12 @@ function init(form: HTMLFormElement, cfg: Config) {
     submit.disabled = true;
     submit.textContent = S.sending;
     try {
+      startProof();
+      if (!proof) throw new Error('sin verificación');
+      const check = await Promise.race([
+        proof,
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('tiempo')), 20000)),
+      ]);
       // text/plain evita la consulta previa de CORS que Apps Script no responde.
       const res = await fetch(cfg.endpoint, {
         method: 'POST',
@@ -186,6 +242,7 @@ function init(form: HTMLFormElement, cfg: Config) {
         body: JSON.stringify({
           nombre: text('name'),
           correo: text('email'),
+          telefono: text('phone'),
           direccion: text('address'),
           propiedad: sh.property[val('property')] ?? '',
           tamano: sh.size[val('size')] ?? '',
@@ -197,8 +254,11 @@ function init(form: HTMLFormElement, cfg: Config) {
           zona: cfg.zona,
           idioma: cfg.lang,
           pagina: location.pathname,
+          autorizacion: form.querySelector<HTMLInputElement>('[name="consent"]')!.checked,
           website: text('website'),
           elapsed: Date.now() - startedAt,
+          reto: check.reto,
+          prueba: check.prueba,
         }),
       });
       const result = (await res.json().catch(() => null)) as { ok?: boolean } | null;

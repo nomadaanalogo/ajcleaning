@@ -1,6 +1,7 @@
 ---
 import Icon from './Icon.astro';
 import { ui, routes, quoteHref, type Lang } from '../data/i18n';
+import { site } from '../data/site';
 interface Props { lang: Lang; alt: string; overlay?: boolean }
 const { lang, alt, overlay = false } = Astro.props;
 const n = ui.nav;
@@ -21,6 +22,11 @@ const altLang = lang === 'en' ? 'es' : 'en';
       {links.map((l) => <a href={l.href}>{l.label}</a>)}
     </nav>
     <div class="actions">
+      {site.phone && (
+        <a class="call" href={`tel:${site.phone}`} data-track="call_click" aria-label={lang === 'es' ? `Llamar al ${site.phoneDisplay}` : `Call ${site.phoneDisplay}`}>
+          <Icon name="phone" /><span>{site.phoneDisplay}</span>
+        </a>
+      )}
       <a class="lang" href={alt} hreflang={altLang} lang={altLang} aria-label={n.langLabel[lang]}>
         <span class="lang-long">{n.langName[lang]}</span><span class="lang-short">{n.langShort[lang]}</span>
       </a>
@@ -61,6 +67,9 @@ const altLang = lang === 'en' ? 'es' : 'en';
   .is-overlay:not(.is-solid) .lang { background: rgb(251 246 239 / 0.9); }
   .lang:hover, .is-overlay:not(.is-solid) .lang:hover { background: var(--ink); color: #fff; }
   .lang-short { display: none; }
+  .call { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 6px; font-weight: 600; font-size: 0.95rem; text-decoration: none; white-space: nowrap; }
+  .call :global(svg) { width: 19px; height: 19px; color: var(--blush-700); }
+  .call:hover span { text-decoration: underline; }
   .cta { min-height: 44px; padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; }
   .menu { display: none; position: relative; }
   .menu summary { display: grid; place-items: center; width: 44px; height: 44px; cursor: pointer; list-style: none; border-radius: 50%; }
@@ -72,6 +81,10 @@ const altLang = lang === 'en' ? 'es' : 'en';
   @media (max-width: 980px) {
     .links { display: none; }
     .menu { display: block; }
+    /* En pantallas medianas y celular, solo el ícono: un toque y llama. */
+    .call { justify-content: center; width: 44px; padding: 0; border: 1.5px solid rgb(60 36 21 / 0.28); border-radius: 50%; }
+    .is-overlay:not(.is-solid) .call { background: rgb(251 246 239 / 0.9); }
+    .call span { display: none; }
   }
   @media (max-width: 620px) {
     .brand span, .lang-long { display: none; }

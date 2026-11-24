@@ -1,7 +1,9 @@
 ---
 /**
- * Borrador basado en lo que el negocio confirmó. PENDIENTE: revisión de un abogado en Florida.
- * No incluye política de cancelación, reembolso del depósito ni garantía porque no están definidas.
+ * Términos y condiciones. Escritos con lo que el negocio confirmó (depósito del 25%, Zelle o
+ * transferencia, horario, no lavar platos) y cláusulas generales de un servicio de limpieza.
+ * No fijan plazos de cancelación ni montos de reembolso porque el negocio no los ha definido:
+ * se acuerdan en cada reserva. PENDIENTE: revisión de un abogado en Florida antes de darlos por finales.
  */
 import Base from '../layouts/Base.astro';
 import Crumbs from '../components/Crumbs.astro';
@@ -11,42 +13,253 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const es = lang === 'es';
 
-const sections: { h: string; p: string[] }[] = es
+const UPDATED = { en: 'November 23, 2026', es: '23 de noviembre de 2026' };
+const contact = [site.phoneDisplay, site.email].filter(Boolean).join(es ? ' o ' : ' or ');
+
+type Section = { h: string; p?: string[]; li?: string[] };
+const sections: Section[] = es
   ? [
-      { h: 'Quiénes somos', p: [`${site.name} presta servicios de limpieza en Florida. Al usar este sitio o contratar un servicio, aceptas estos términos.`] },
-      { h: 'Solicitudes y cotizaciones', p: ['Enviar el formulario es una solicitud, no una reserva. Te enviaremos una cotización según la propiedad y el servicio.', 'El servicio queda confirmado cuando aceptas la cotización y pagas el depósito.'] },
-      { h: 'Depósito y pagos', p: ['Para reservar se paga el 25% antes del día del servicio.', 'Aceptamos Zelle o transferencia directa. Este sitio no procesa pagos.'] },
-      { h: 'Programación y cancelaciones', p: ['Trabajamos de lunes a viernes, de 8 am a 5 pm, y el horario puede adaptarse. Los servicios se reservan con anticipación.', 'Los cambios y cancelaciones se acuerdan al confirmar tu reserva.'] },
-      { h: 'Alcance del servicio', p: ['La cotización indica qué incluye tu servicio. Los extras se acuerdan aparte.', 'No lavamos platos sucios, para cuidar tus pertenencias y evitar inconvenientes.'] },
-      { h: 'Productos', p: ['Podemos llevar nuestros productos o usar los tuyos. Avísanos sobre alergias, mascotas, superficies delicadas o cualquier preferencia antes del servicio.'] },
-      { h: 'Acceso a la propiedad', p: ['Debes darnos acceso seguro en la fecha acordada y tener autorización para contratar el servicio en esa propiedad.'] },
-      { h: 'Contenido del sitio', p: ['La información de este sitio es general y puede cambiar. Las fotos son ilustrativas y no siempre corresponden a trabajos nuestros.', 'Los textos, el logo y el diseño pertenecen a sus titulares. No los copies sin permiso.'] },
-      { h: 'Ley aplicable', p: ['Estos términos se rigen por las leyes del estado de Florida, Estados Unidos.'] },
-      { h: 'Cambios y contacto', p: ['Podemos actualizar estos términos; la versión vigente es la publicada aquí. Si tienes preguntas, escríbenos por WhatsApp.'] },
+      {
+        h: '1. Aceptación',
+        p: [
+          `Estos términos aplican a quien usa este sitio, pide una cotización o contrata un servicio de ${site.name} ("nosotros"). Al hacerlo, los aceptas.`,
+          'Si no estás de acuerdo, no uses el sitio ni el formulario.',
+        ],
+      },
+      {
+        h: '2. Nuestros servicios',
+        p: [
+          'Ofrecemos limpieza regular y de una sola vez, limpieza profunda, mudanzas, post-construcción, Airbnb, oficinas, propiedades en venta, lavandería a domicilio y extras como ventanas, alfombras y electrodomésticos, en Florida.',
+          'Lo que incluye cada servicio es lo que dice tu cotización. Lo que no aparece ahí no está incluido.',
+        ],
+      },
+      {
+        h: '3. Solicitudes y cotizaciones',
+        li: [
+          'Enviar el formulario es una solicitud, no una reserva ni un contrato.',
+          'Cotizamos según lo que nos cuentas: tipo de propiedad, tamaño, habitaciones, baños, frecuencia y extras. Por eso es importante que la información sea correcta.',
+          'Si al llegar la propiedad es muy distinta a lo informado (más grande, con mucha más suciedad, con mascotas no avisadas, etc.), podemos ajustar el precio o el alcance antes de empezar. Si no estás de acuerdo, no se hace el servicio.',
+          'Las cotizaciones tienen la vigencia que indiquen. Sin fecha indicada, valen 30 días.',
+        ],
+      },
+      {
+        h: '4. Reserva, depósito y pagos',
+        li: [
+          'Tu servicio queda reservado cuando aceptas la cotización y pagas un depósito del 25%.',
+          'El saldo se paga como lo acordemos en tu cotización.',
+          'Aceptamos Zelle o transferencia directa. Este sitio no recibe ni guarda datos de pago.',
+          'En los planes regulares, la tarifa por visita aplica mientras el plan esté activo con la frecuencia acordada.',
+        ],
+      },
+      {
+        h: '5. Horarios, cambios y cancelaciones',
+        li: [
+          'Trabajamos de lunes a viernes, de 8 am a 5 pm. El horario puede adaptarse según disponibilidad.',
+          'Si necesitas cambiar o cancelar, avísanos lo antes posible. El aviso mínimo y qué pasa con el depósito se acuerdan al confirmar tu reserva.',
+          'Si no podemos entrar a la propiedad a la hora acordada, la visita puede contarse como realizada o reprogramarse, según lo acordado.',
+          'Si nosotros tenemos que reprogramar, te avisamos y buscamos la fecha más cercana. Si prefieres no reprogramar, te devolvemos lo que hayas pagado por esa visita.',
+          'Los planes regulares se pueden pausar o terminar avisándonos antes de la siguiente visita.',
+        ],
+      },
+      {
+        h: '6. Lo que necesitamos de ti',
+        li: [
+          'Acceso seguro a la propiedad en la fecha y hora acordadas, y autorización para contratar el servicio en ella.',
+          'Agua y electricidad funcionando.',
+          'Guardar objetos de valor, dinero, joyas, documentos y medicamentos.',
+          'Avisarnos de mascotas, alergias, alarmas, superficies delicadas u objetos frágiles o valiosos.',
+          'Mantener a las mascotas en un lugar seguro durante el servicio si es necesario.',
+        ],
+      },
+      {
+        h: '7. Lo que no hacemos',
+        li: [
+          'Lavar platos sucios. Así cuidamos tus pertenencias y evitamos inconvenientes.',
+          'Limpiar residuos peligrosos o biológicos (sangre, desechos humanos o de animales en cantidad, moho extenso, plagas).',
+          'Mover muebles o electrodomésticos pesados, ni trabajar en alturas que requieran equipo especial.',
+          'Cualquier tarea que ponga en riesgo la seguridad de nuestro equipo. Si algo no es seguro, te avisamos y lo dejamos para después.',
+        ],
+      },
+      {
+        h: '8. Productos',
+        p: ['Podemos llevar nuestros productos o usar los tuyos. Si usamos los tuyos, son tu elección y no respondemos por sus efectos en las superficies.'],
+      },
+      {
+        h: '9. Si algo no quedó bien',
+        p: [
+          'Revisa la propiedad después del servicio. Si algo no quedó como esperabas, avísanos pronto, idealmente con fotos, y buscamos una solución.',
+        ],
+      },
+      {
+        h: '10. Daños y responsabilidad',
+        li: [
+          'Trabajamos con cuidado. Si algo se daña por nuestra culpa durante el servicio, avísanos dentro de las 48 horas siguientes, con fotos, para revisarlo.',
+          'No respondemos por desgaste normal, daños previos, objetos mal instalados o asegurados, ni por objetos de valor que no se guardaron.',
+          'En la medida que lo permita la ley, nuestra responsabilidad por un servicio se limita a lo que pagaste por ese servicio.',
+        ],
+      },
+      {
+        h: '11. Respeto mutuo',
+        p: [
+          'Podemos negarnos a prestar o terminar un servicio si hay condiciones inseguras o trato abusivo hacia nuestro equipo.',
+          'Si alguien de nuestro equipo te trató mal, cuéntanos: lo tomamos en serio.',
+        ],
+      },
+      {
+        h: '12. Contacto y uso de tus datos',
+        p: [
+          'Al enviar el formulario y marcar la casilla de autorización, nos permites contactarte por llamada, mensaje de texto, WhatsApp o correo para responder tu solicitud y coordinar tu servicio. Puedes pedir que dejemos de contactarte cuando quieras.',
+          'Cómo tratamos tus datos está en nuestra política de privacidad.',
+        ],
+      },
+      {
+        h: '13. Uso del sitio',
+        li: [
+          'Usa el formulario solo para pedir servicios reales y con datos verdaderos.',
+          'No está permitido enviar solicitudes automáticas, usar robots, intentar dañar el sitio o usar el formulario para enviar spam. Bloqueamos esos envíos.',
+          'La información del sitio es general y puede cambiar. Algunas fotos son ilustrativas.',
+          'Los textos, el logo y el diseño son de sus titulares. No los copies sin permiso.',
+        ],
+      },
+      {
+        h: '14. Ley aplicable',
+        p: ['Estos términos se rigen por las leyes del estado de Florida, Estados Unidos. Antes de cualquier reclamo, intentemos resolverlo hablando.'],
+      },
+      {
+        h: '15. Cambios y contacto',
+        p: [
+          'Podemos actualizar estos términos. La versión vigente es la publicada en esta página, con su fecha. Los servicios ya confirmados se rigen por lo acordado al reservarlos.',
+          contact ? `¿Preguntas? Llámanos o escríbenos al ${contact}.` : '¿Preguntas? Escríbenos por WhatsApp.',
+        ],
+      },
     ]
   : [
-      { h: 'Who we are', p: [`${site.name} provides cleaning services in Florida. By using this site or booking a service, you accept these terms.`] },
-      { h: 'Requests and quotes', p: ['Sending the form is a request, not a booking. We will send you a quote based on the property and service.', 'Your service is confirmed once you accept the quote and pay the deposit.'] },
-      { h: 'Deposit and payments', p: ['A 25% deposit is due before the service day to book.', 'We accept Zelle or direct bank transfer. This site does not process payments.'] },
-      { h: 'Scheduling and cancellations', p: ['We work Monday to Friday, 8 am to 5 pm, and the schedule can adapt. Services are booked ahead of time.', 'Changes and cancellations are agreed when your booking is confirmed.'] },
-      { h: 'Scope of service', p: ['Your quote states what your service includes. Add-ons are agreed separately.', 'We do not wash dirty dishes, to protect your belongings and avoid any issue.'] },
-      { h: 'Products', p: ['We can bring our products or use yours. Tell us about allergies, pets, delicate surfaces or any preference before the service.'] },
-      { h: 'Access to the property', p: ['You must give us safe access on the agreed date and be authorized to book the service at that property.'] },
-      { h: 'Site content', p: ['Information on this site is general and may change. Photos are illustrative and do not always show our own work.', 'Text, logo and design belong to their owners. Do not copy them without permission.'] },
-      { h: 'Governing law', p: ['These terms are governed by the laws of the State of Florida, United States.'] },
-      { h: 'Changes and contact', p: ['We may update these terms; the current version is the one published here. Questions? Message us on WhatsApp.'] },
+      {
+        h: '1. Acceptance',
+        p: [
+          `These terms apply to anyone who uses this site, requests a quote or books a service with ${site.name} ("we" or "us"). By doing so, you accept them.`,
+          'If you do not agree, please do not use the site or the form.',
+        ],
+      },
+      {
+        h: '2. Our services',
+        p: [
+          'We offer recurring and one-time cleaning, deep cleaning, move in and move out, post-construction, Airbnb, office and listing cleaning, in-home laundry and add-ons such as windows, carpets and appliances, in Florida.',
+          'What each service includes is what your quote says. Anything not listed there is not included.',
+        ],
+      },
+      {
+        h: '3. Requests and quotes',
+        li: [
+          'Sending the form is a request, not a booking or a contract.',
+          'We quote based on what you tell us: property type, size, bedrooms, bathrooms, frequency and add-ons. Please make sure it is accurate.',
+          'If the property is very different from what was described (larger, much dirtier, pets we were not told about, etc.), we may adjust the price or scope before we start. If you do not agree, the service does not go ahead.',
+          'Quotes are valid for the period they state. With no date stated, they are valid for 30 days.',
+        ],
+      },
+      {
+        h: '4. Booking, deposit and payment',
+        li: [
+          'Your service is booked once you accept the quote and pay a 25% deposit.',
+          'The balance is paid as agreed in your quote.',
+          'We accept Zelle or direct bank transfer. This site does not receive or store payment details.',
+          'On recurring plans, the per-visit rate applies while the plan stays active at the agreed frequency.',
+        ],
+      },
+      {
+        h: '5. Scheduling, changes and cancellations',
+        li: [
+          'We work Monday to Friday, 8 am to 5 pm. The schedule can adapt to availability.',
+          'If you need to reschedule or cancel, tell us as soon as you can. The minimum notice and what happens to the deposit are agreed when your booking is confirmed.',
+          'If we cannot get into the property at the agreed time, the visit may count as completed or be rescheduled, as agreed.',
+          'If we have to reschedule, we will tell you and find the nearest date. If you would rather not reschedule, we refund what you paid for that visit.',
+          'Recurring plans can be paused or ended by telling us before the next visit.',
+        ],
+      },
+      {
+        h: '6. What we need from you',
+        li: [
+          'Safe access to the property on the agreed date and time, and authority to book the service there.',
+          'Working water and electricity.',
+          'Valuables, cash, jewelry, documents and medicine put away.',
+          'A heads-up about pets, allergies, alarms, delicate surfaces or fragile or valuable items.',
+          'Pets kept in a safe place during the service when needed.',
+        ],
+      },
+      {
+        h: '7. What we do not do',
+        li: [
+          'Wash dirty dishes. It protects your belongings and avoids any issue.',
+          'Clean hazardous or biological waste (blood, large amounts of human or animal waste, extensive mold, pests).',
+          'Move heavy furniture or appliances, or work at heights that need special equipment.',
+          'Anything that puts our team at risk. If something is unsafe, we will tell you and leave it for later.',
+        ],
+      },
+      {
+        h: '8. Products',
+        p: ['We can bring our products or use yours. If we use yours, they are your choice and we are not responsible for their effect on surfaces.'],
+      },
+      {
+        h: '9. If something is not right',
+        p: [
+          'Check the property after the service. If something is not as you expected, tell us soon, ideally with photos, and we will work it out.',
+        ],
+      },
+      {
+        h: '10. Damage and liability',
+        li: [
+          'We work with care. If something is damaged through our fault during the service, tell us within 48 hours, with photos, so we can look into it.',
+          'We are not responsible for normal wear, prior damage, items that were improperly installed or secured, or valuables that were not put away.',
+          'To the extent the law allows, our liability for a service is limited to what you paid for that service.',
+        ],
+      },
+      {
+        h: '11. Mutual respect',
+        p: [
+          'We may decline or stop a service if conditions are unsafe or our team is treated abusively.',
+          'If someone on our team treated you poorly, tell us: we take it seriously.',
+        ],
+      },
+      {
+        h: '12. Contact and your data',
+        p: [
+          'By sending the form and checking the consent box, you allow us to contact you by phone call, text message, WhatsApp or email to answer your request and arrange your service. You can ask us to stop at any time.',
+          'How we handle your data is explained in our privacy policy.',
+        ],
+      },
+      {
+        h: '13. Using this site',
+        li: [
+          'Use the form only to request real services, with true information.',
+          'Automated submissions, bots, attempts to harm the site and using the form to send spam are not allowed. We block them.',
+          'Information on this site is general and may change. Some photos are illustrative.',
+          'Text, logo and design belong to their owners. Do not copy them without permission.',
+        ],
+      },
+      {
+        h: '14. Governing law',
+        p: ['These terms are governed by the laws of the State of Florida, United States. Before any claim, let us try to settle it by talking.'],
+      },
+      {
+        h: '15. Changes and contact',
+        p: [
+          'We may update these terms. The current version is the one published on this page, with its date. Services already confirmed follow what was agreed when they were booked.',
+          contact ? `Questions? Call or text us at ${contact}.` : 'Questions? Message us on WhatsApp.',
+        ],
+      },
     ];
 ---
 <Base
   lang={lang}
   alt={routes.terms[es ? 'en' : 'es']}
   title={es ? 'Términos y condiciones | AJ Cleaning Home' : 'Terms and Conditions | AJ Cleaning Home'}
-  description={es ? 'Condiciones para usar este sitio, pedir una cotización y contratar los servicios de limpieza de AJ Cleaning Home.' : 'Terms for using this site, requesting a quote and booking cleaning services with AJ Cleaning Home.'}
+  description={es ? 'Condiciones para usar este sitio, pedir una cotización y contratar los servicios de limpieza de AJ Cleaning Home en Florida.' : 'Terms for using this site, requesting a quote and booking cleaning services with AJ Cleaning Home in Florida.'}
 >
   <section class="page-hero">
     <div class="wrap">
       <Crumbs label="Breadcrumb" items={[{ name: ui.nav.home[lang], href: routes.home[lang] }, { name: es ? 'Términos' : 'Terms' }]} />
       <h1>{es ? 'Términos y condiciones' : 'Terms and conditions'}</h1>
+      <p class="updated">{es ? 'Última actualización: ' : 'Last updated: '}{UPDATED[lang]}</p>
     </div>
   </section>
   <section class="section">
@@ -54,16 +267,26 @@ const sections: { h: string; p: string[] }[] = es
       {sections.map((s) => (
         <>
           <h2>{s.h}</h2>
-          {s.p.map((t) => <p>{t}</p>)}
+          {s.p?.map((t) => <p>{t}</p>)}
+          {s.li && <ul>{s.li.map((t) => <li>{t}</li>)}</ul>}
         </>
       ))}
+      <p class="see">
+        {es ? 'Lee también nuestra ' : 'See also our '}
+        <a href={routes.privacy[lang]}>{es ? 'política de privacidad' : 'privacy policy'}</a>.
+      </p>
     </div>
   </section>
 </Base>
 
 <style>
-  .body { max-width: 720px; }
-  h2 { margin-top: 28px; font-family: var(--display); font-size: 1.9rem; line-height: 1.1; }
+  .updated { margin-top: 10px; color: var(--ink-soft); font-size: 0.95rem; }
+  .body { max-width: 740px; }
+  h2 { margin-top: 34px; font-family: var(--display); font-size: 1.85rem; line-height: 1.1; }
   h2:first-child { margin-top: 0; }
   p { margin-top: 8px; color: var(--ink-soft); }
+  ul { margin-top: 10px; padding-left: 1.2em; display: grid; gap: 6px; color: var(--ink-soft); list-style: disc; }
+  li::marker { color: var(--blush-700); }
+  .see { margin-top: 36px; padding-top: 20px; border-top: 1px solid var(--line); }
+  .see a { color: var(--blush-700); font-weight: 600; }
 </style>

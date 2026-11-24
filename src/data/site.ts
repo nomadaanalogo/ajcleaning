@@ -1,10 +1,11 @@
 /** Datos del negocio. Lo que está vacío no se publica en la página ni en el schema. */
 export const site = {
   name: 'AJ Cleaning Home',
-  // PENDIENTE: número con código de país, solo dígitos. Ej: 13055550123
-  whatsapp: '',
-  // PENDIENTE: el formulario dice que es el mismo número para llamadas.
-  phone: '',
+  // Número con código de país, solo dígitos. El cliente indicó que WhatsApp y llamadas usan el mismo número.
+  whatsapp: '13056804609',
+  // Formato E.164 para enlaces tel: y el schema; phoneDisplay es como se lee en la página.
+  phone: '+13056804609',
+  phoneDisplay: '(305) 680-4609',
   email: '',
   social: { instagram: '', facebook: '' },
   yearsInBusiness: 2,

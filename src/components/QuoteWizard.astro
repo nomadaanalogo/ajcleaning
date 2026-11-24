@@ -97,12 +97,14 @@ const config = {
     sending: es ? 'Enviando...' : 'Sending...',
     required: es ? 'Falta este dato.' : 'We need this one.',
     badEmail: es ? 'Revisa tu correo.' : 'Check your email.',
+    badPhone: es ? 'Revisa el número: 10 dígitos.' : 'Check the number: 10 digits.',
     beds: es ? 'hab.' : 'bed',
     baths: es ? 'baños' : 'bath',
     none: es ? 'Ninguno' : 'None',
     waMsg: es ? '¡Hola AJ Cleaning Home! Quiero una cotización.' : 'Hi AJ Cleaning Home! I would like a quote.',
     wName: es ? 'Nombre' : 'Name',
     wAddress: es ? 'Dirección' : 'Address',
+    wPhone: es ? 'Teléfono' : 'Phone',
     wProperty: es ? 'Propiedad' : 'Property',
     wSize: es ? 'Tamaño' : 'Size',
     wFrequency: es ? 'Frecuencia' : 'How often',
@@ -240,18 +242,27 @@ const next = es ? 'Continuar' : 'Continue';
             <label class="field"><span>{es ? 'Tu nombre' : 'Your name'}</span><input type="text" name="name" autocomplete="name" maxlength="80" required /><small class="err" hidden></small></label>
             <label class="field"><span>{es ? 'Tu correo' : 'Your email'}</span><input type="email" name="email" autocomplete="email" inputmode="email" maxlength="160" required /><small class="err" hidden></small></label>
             <label class="field field--wide"><span>{es ? 'Dirección de la propiedad' : 'Property address'}</span><input type="text" name="address" autocomplete="street-address" maxlength="200" placeholder={es ? 'Calle, ciudad y código postal' : 'Street, city and ZIP'} required /><small class="err" hidden></small></label>
+            <label class="field"><span>{es ? 'Tu teléfono' : 'Your phone'} <em class="opt">{es ? 'Opcional' : 'Optional'}</em></span><input type="tel" name="phone" autocomplete="tel" inputmode="tel" maxlength="24" placeholder="(305) 555-0123" data-optional /><small class="err" hidden></small></label>
+          </div>
+
+          <!-- Autorización de contacto: obligatoria -->
+          <div class="consent-wrap">
+            <label class="consent">
+              <input type="checkbox" name="consent" value="yes" />
+              <span class="box" aria-hidden="true"></span>
+              <span>
+                {es
+                  ? <>Autorizo a AJ Cleaning Home a contactarme por llamada, mensaje de texto, WhatsApp o correo sobre mi solicitud, y acepto los <a href={routes.terms[lang]} target="_blank" rel="noopener">términos</a> y la <a href={routes.privacy[lang]} target="_blank" rel="noopener">política de privacidad</a>.</>
+                  : <>I authorize AJ Cleaning Home to contact me by call, text message, WhatsApp or email about my request, and I accept the <a href={routes.terms[lang]} target="_blank" rel="noopener">terms</a> and the <a href={routes.privacy[lang]} target="_blank" rel="noopener">privacy policy</a>.</>}
+              </span>
+            </label>
+            <p class="err" data-err="consent" role="alert" hidden>{es ? 'Marca la casilla para que podamos contactarte.' : 'Check the box so we can contact you.'}</p>
           </div>
           <!-- Campo trampa para bots: las personas no lo ven -->
           <div class="trap" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label></div>
           <div class="nav nav--final">
             <button type="submit" class="btn btn--primary btn--send" data-submit data-track="quote_submit">{config.strings.send} <Icon name="arrow" /></button>
           </div>
-          <p class="legal">
-            {es ? 'Al enviar, aceptas los ' : 'By sending, you accept our '}
-            <a href={routes.terms[lang]}>{es ? 'términos' : 'terms'}</a>
-            {es ? ' y la ' : ' and '}
-            <a href={routes.privacy[lang]}>{es ? 'política de privacidad' : 'privacy policy'}</a>.
-          </p>
           <div class="fail" data-fail role="alert" hidden>
             <p>{es ? 'No pudimos enviar tu solicitud. Tus datos siguen aquí.' : 'We could not send your request. Your details are still here.'}</p>
             <a class="btn btn--wa" data-fail-wa href={whatsappUrl(c.waHello[lang])} target="_blank" rel="noopener"><Icon name="whatsapp" /> {es ? 'Enviar por WhatsApp' : 'Send on WhatsApp'}</a>
@@ -374,7 +385,16 @@ const next = es ? 'Continuar' : 'Continue';
   .btn--send { width: 100%; min-height: 60px; font-size: 1.08rem; }
   .btn--send[disabled] { opacity: 0.7; cursor: progress; transform: none; }
   .nav--final { margin-top: 20px; }
-  .legal { margin-top: 12px; font-size: 0.88rem; color: var(--ink-soft); }
+  .opt { font-style: normal; font-weight: 400; font-size: 0.85rem; color: var(--ink-soft); }
+  .consent-wrap { margin-top: 18px; }
+  .consent { position: relative; display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; padding: 14px 16px; background: #fff; border: 1.5px solid var(--line); border-radius: 16px; font-size: 0.93rem; line-height: 1.45; color: var(--ink-soft); cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+  .consent:hover { border-color: var(--blush-700); }
+  .consent a { color: var(--blush-700); font-weight: 600; }
+  .consent .box { width: 24px; height: 24px; margin-top: 1px; border: 1.5px solid rgb(60 36 21 / 0.4); border-radius: 7px; background: #fff; transition: background 0.2s, border-color 0.2s; }
+  .consent input:checked + .box { border-color: var(--blush-700); background: var(--blush-700) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 16px no-repeat; }
+  .consent:has(input:checked) { border-color: var(--blush-700); background: var(--blush-50); }
+  .consent input:focus-visible + .box { outline: 3px solid var(--blush-700); outline-offset: 2px; }
+  .consent-wrap.is-bad .consent { border-color: #b4412d; }
   .fail { margin-top: 14px; padding: 14px 16px; background: #fff1e6; border-radius: 14px; display: grid; gap: 10px; font-weight: 600; }
   .fail[hidden] { display: none; }
   .fail .btn { justify-self: start; min-height: 46px; padding-block: 8px; }
