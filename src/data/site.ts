@@ -6,7 +6,7 @@ export const site = {
   // Formato E.164 para enlaces tel: y el schema; phoneDisplay es como se lee en la página.
   phone: '+13056804609',
   phoneDisplay: '(305) 680-4609',
-  email: '',
+  email: 'ajcleaninghome@gmail.com',
   social: { instagram: '', facebook: '' },
   yearsInBusiness: 2,
   teamSize: 2,

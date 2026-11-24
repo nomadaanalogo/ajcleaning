@@ -23,9 +23,19 @@
 // ---------- Configuración ----------
 const CONFIG = {
   BUSINESS_NAME: "AJ Cleaning Home",
-  // PENDIENTE: correo de AJ Cleaning Home que recibe los avisos. Vacío = no se envía aviso.
-  NOTIFY_EMAIL: "",
+  // Correo de AJ Cleaning Home que recibe los avisos y las respuestas de los clientes.
+  NOTIFY_EMAIL: "ajcleaninghome@gmail.com",
   SHEET_NAME: "Solicitudes",
+
+  // Datos que salen en el correo al cliente.
+  PHONE: "+13056804609", // Para el botón de llamar.
+  PHONE_DISPLAY: "(305) 680-4609",
+  WHATSAPP: "13056804609", // Solo dígitos, con código de país.
+  // PENDIENTE: dominio definitivo. Vacío = el pie del correo no muestra el enlace al sitio.
+  SITE_URL: "",
+  // PENDIENTE: URL pública del logo (por ejemplo SITE_URL + "/brand/logo-160.webp" ya publicado,
+  // o mejor un PNG, que se ve en más programas de correo). Vacío = el encabezado muestra el nombre en texto.
+  LOGO_URL: "",
 
   // Anti-robots
   MIN_FILL_MS: 4000, // Envíos más rápidos que esto (desde que se pidió el reto) se descartan.
@@ -59,6 +69,36 @@ const ALLOWED = {
 };
 
 const CONSENT_TEXT = "Sí: llamada, texto, WhatsApp y correo";
+
+// La hoja guarda todo en español. Para el correo de un cliente en inglés se traducen los valores.
+const EN = {
+  Casa: "House",
+  Apartamento: "Apartment",
+  Airbnb: "Airbnb",
+  Oficina: "Office",
+  "Propiedad en venta": "Listing",
+  "Menos de 1,000 pies²": "Under 1,000 sq ft",
+  "1,000 – 1,500 pies²": "1,000 – 1,500 sq ft",
+  "1,500 – 2,000 pies²": "1,500 – 2,000 sq ft",
+  "2,000 – 2,500 pies²": "2,000 – 2,500 sq ft",
+  "2,500 – 3,500 pies²": "2,500 – 3,500 sq ft",
+  "Más de 3,500 pies²": "Over 3,500 sq ft",
+  "No sabe": "Not sure",
+  Semanal: "Weekly",
+  "Cada 2 semanas": "Every 2 weeks",
+  "Cada 3 semanas": "Every 3 weeks",
+  "Solo una vez": "Just once",
+  Lavandería: "Laundry",
+  Ventanas: "Windows",
+  Alfombras: "Carpets",
+  "Nevera y horno por dentro": "Inside fridge & oven",
+};
+function toEnglish(value) {
+  return String(value || "")
+    .split(", ")
+    .map((v) => EN[v] || v)
+    .join(", ");
+}
 
 const HEADERS = [
   "Fecha",
@@ -245,28 +285,74 @@ function sendAutoReply(lead) {
   const lines = es
     ? [`¡Hola ${firstName}!`, "Recibimos tu solicitud de limpieza.", "Te contactaremos pronto con tu cotización."]
     : [`Hi ${firstName}!`, "We got your cleaning request.", "We will contact you soon with your quote."];
+  const t = es
+    ? { summary: "Tu solicitud", hurry: "¿Tienes prisa? Escríbenos o llámanos.", call: "Llamar", hours: "Lun a vie, 8 am a 5 pm", replyHint: "Puedes responder este correo." }
+    : { summary: "Your request", hurry: "In a hurry? Message or call us.", call: "Call", hours: "Mon to Fri, 8 am to 5 pm", replyHint: "You can reply to this email." };
+  const waText = encodeURIComponent(es ? `¡Hola! Soy ${lead.nombre}, acabo de pedir una cotización.` : `Hi! I'm ${lead.nombre}, I just requested a quote.`);
+  const waUrl = `https://wa.me/${CONFIG.WHATSAPP}?text=${waText}`;
+
+  // Botones con estilos en línea (Gmail, Outlook, Apple Mail). En pantallas angostas bajan
+  // a la línea siguiente completos, sin partir el texto.
+  const button = (href, label, bg, color, border) =>
+    `<a href="${href}" style="display:inline-block;margin:0 8px 10px 0;padding:12px 20px;border-radius:999px;background:${bg};color:${color};border:1.5px solid ${border};font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;text-decoration:none;white-space:nowrap;">${escapeHtml(label)}</a>`;
+  const v = (value) => (es ? value : toEnglish(value));
+
+  const header = CONFIG.LOGO_URL
+    ? `<img src="${CONFIG.LOGO_URL}" width="64" height="64" alt="${CONFIG.BUSINESS_NAME}" style="display:inline-block;width:64px;height:64px;border-radius:50%;border:0;vertical-align:middle;" />
+       <span style="display:inline-block;margin-left:14px;vertical-align:middle;font-family:Georgia,serif;font-size:22px;color:#ffffff;">${CONFIG.BUSINESS_NAME}</span>`
+    : `<span style="font-family:Georgia,serif;font-size:22px;color:#ffffff;">${CONFIG.BUSINESS_NAME}</span>`;
+
+  const footerLinks = [
+    CONFIG.PHONE_DISPLAY ? `<a href="tel:${CONFIG.PHONE}" style="color:#8e4f3e;text-decoration:none;">${CONFIG.PHONE_DISPLAY}</a>` : "",
+    CONFIG.NOTIFY_EMAIL ? `<a href="mailto:${CONFIG.NOTIFY_EMAIL}" style="color:#8e4f3e;text-decoration:none;">${CONFIG.NOTIFY_EMAIL}</a>` : "",
+    CONFIG.SITE_URL ? `<a href="${CONFIG.SITE_URL}" style="color:#8e4f3e;text-decoration:none;">${CONFIG.SITE_URL.replace(/^https?:\/\/(www\.)?/, "")}</a>` : "",
+  ].filter(Boolean).join(" &nbsp;·&nbsp; ");
 
   const html = `
   <div style="margin:0;padding:32px 16px;background:#fbf6ef;font-family:Arial,Helvetica,sans-serif;">
     <div style="max-width:540px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;">
-      <div style="background:#4a2a20;padding:22px 28px;font-family:Georgia,serif;font-size:22px;color:#ffffff;">${CONFIG.BUSINESS_NAME}</div>
-      <div style="padding:30px 28px;color:#3c2415;">
+      <div style="background:#4a2a20;padding:20px 28px;">${header}</div>
+      <div style="padding:30px 28px 26px;color:#3c2415;">
         <h1 style="margin:0 0 14px;font-family:Georgia,serif;font-size:26px;font-weight:normal;">${escapeHtml(lines[0])}</h1>
         <p style="margin:0 0 8px;font-size:16px;line-height:1.5;">${escapeHtml(lines[1])}</p>
         <p style="margin:0 0 22px;font-size:16px;line-height:1.5;">${escapeHtml(lines[2])}</p>
-        ${summaryRow(es ? "Propiedad" : "Property", lead.propiedad)}
-        ${summaryRow(es ? "Tamaño" : "Size", lead.tamano)}
-        ${summaryRow(es ? "Frecuencia" : "How often", lead.frecuencia)}
-        ${summaryRow(es ? "Extras" : "Extras", lead.extras)}
-        ${summaryRow(es ? "Dirección" : "Address", lead.direccion)}
+
+        <div style="padding:18px 20px 10px;background:#fdf4f1;border-radius:12px;">
+          <p style="margin:0 0 10px;font-size:12px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;color:#8e4f3e;">${escapeHtml(t.summary)}</p>
+          ${summaryRow(es ? "Propiedad" : "Property", v(lead.propiedad))}
+          ${summaryRow(es ? "Tamaño" : "Size", v(lead.tamano))}
+          ${summaryRow(es ? "Frecuencia" : "How often", v(lead.frecuencia))}
+          ${summaryRow(es ? "Extras" : "Extras", v(lead.extras))}
+          ${summaryRow(es ? "Dirección" : "Address", lead.direccion)}
+        </div>
+
+        <p style="margin:24px 0 12px;font-size:16px;line-height:1.5;">${escapeHtml(t.hurry)}</p>
+        <div>
+          ${CONFIG.WHATSAPP ? button(waUrl, "WhatsApp", "#8e4f3e", "#ffffff", "#8e4f3e") : ""}${CONFIG.PHONE ? button(`tel:${CONFIG.PHONE}`, `${t.call} ${CONFIG.PHONE_DISPLAY}`, "#ffffff", "#8e4f3e", "#e4b3a5") : ""}
+        </div>
+      </div>
+      <div style="padding:18px 28px 22px;border-top:1px solid #f0e2d8;font-size:13px;line-height:1.6;color:#6b5242;">
+        <strong style="color:#3c2415;">${CONFIG.BUSINESS_NAME}</strong> · ${escapeHtml(t.hours)}<br />
+        ${footerLinks}<br />
+        <span style="color:#8a7566;">${escapeHtml(t.replyHint)}</span>
       </div>
     </div>
   </div>`;
 
+  const textLines = lines.concat([
+    "",
+    `${t.hurry}`,
+    CONFIG.WHATSAPP ? `WhatsApp: https://wa.me/${CONFIG.WHATSAPP}` : "",
+    CONFIG.PHONE_DISPLAY ? `${t.call}: ${CONFIG.PHONE_DISPLAY}` : "",
+    "",
+    `${CONFIG.BUSINESS_NAME} · ${t.hours}`,
+    CONFIG.SITE_URL,
+  ]).filter((l, i, a) => l !== "" || a[i - 1] !== "");
+
   const options = {
     to: lead.correo,
     subject: subject,
-    body: lines.join("\n") + `\n\n${CONFIG.BUSINESS_NAME}`,
+    body: textLines.join("\n"),
     htmlBody: html,
     name: CONFIG.BUSINESS_NAME,
   };

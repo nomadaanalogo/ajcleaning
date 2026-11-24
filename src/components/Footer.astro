@@ -18,6 +18,7 @@ const year = new Date().getFullYear();
         <li><Icon name="clock" /> {es ? 'Lun a vie, 8 am a 5 pm. Horario flexible.' : 'Mon to Fri, 8 am to 5 pm. Flexible schedule.'}</li>
         <li><Icon name="card" /> {es ? 'Zelle o transferencia directa' : 'Zelle or direct transfer'}</li>
         {site.phone && <li><Icon name="phone" /> <a href={`tel:${site.phone}`} data-track="call_click">{site.phoneDisplay}</a></li>}
+        {site.email && <li><Icon name="mail" /> <a href={`mailto:${site.email}`} data-track="email_click">{site.email}</a></li>}
       </ul>
     </div>
     <nav aria-label={ui.nav.services[lang]}>

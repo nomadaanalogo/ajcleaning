@@ -40,7 +40,7 @@ Copie `.env.example` a `.env`:
 - [ ] Confirmar que el (305) 680-4609 tiene WhatsApp. Está puesto para llamadas y WhatsApp en `src/data/site.ts`.
 - [ ] Dominio real en `astro.config.mjs` y `public/robots.txt`. El actual es un supuesto.
 - [ ] Instalar la hoja de Drive con la cuenta de Google de AJ (`apps-script/README.md`) y poner la URL en `PUBLIC_FORM_ENDPOINT`. Sin esto, las solicitudes no se guardan.
-- [ ] Correo que recibe los avisos: `NOTIFY_EMAIL` en `apps-script/Code.gs`.
+- [ ] Logo y dominio en el correo al cliente: `LOGO_URL` y `SITE_URL` en `apps-script/Code.gs`, cuando el sitio esté publicado. Los avisos ya van a ajcleaninghome@gmail.com.
 - [ ] Revisión de abogado de los términos y condiciones.
 - [ ] Que el negocio confirme los plazos que fijan los términos: daños avisados dentro de 48 horas, cotizaciones válidas 30 días y devolución de la visita si AJ reprograma y el cliente no acepta la nueva fecha.
 

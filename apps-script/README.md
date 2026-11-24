@@ -19,7 +19,7 @@ Hazlo con la cuenta de Google **de AJ Cleaning Home**: la hoja queda en su Drive
 1. Crea una hoja en [sheets.new](https://sheets.new) y llámala, por ejemplo, *Solicitudes AJ Cleaning Home*.
 2. En la hoja, ve a **Extensiones → Apps Script**.
 3. Borra lo que aparece en `Código.gs` y pega el contenido de [`Code.gs`](./Code.gs).
-4. En `CONFIG`, escribe en `NOTIFY_EMAIL` el correo que recibirá los avisos.
+4. En `CONFIG` ya está `NOTIFY_EMAIL: "ajcleaninghome@gmail.com"`, el teléfono y el WhatsApp. Cuando el sitio tenga dominio, llena `SITE_URL` y `LOGO_URL` (el logo en el encabezado del correo).
 5. Guarda.
 6. **Autoriza los permisos:** arriba, elige la función `probarFormulario` y dale **Ejecutar**. Tarda unos 5 segundos porque resuelve la verificación antirobots como lo haría la web.
    - Dale **Revisar permisos → tu cuenta → Configuración avanzada → Ir a … (no seguro) → Permitir**. Sale como "no seguro" porque el script es propio y no está verificado por Google.
