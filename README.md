@@ -54,6 +54,18 @@ Copie `.env.example` a `.env`:
 - [ ] Reseñas reales. No hay sección de reseñas ni estrellas en el schema hasta tenerlas.
 - [ ] Revisión de la política de privacidad.
 
+**SEO: datos que el negocio debe confirmar** (los competidores que rankean los muestran)
+
+- [ ] ¿Hablan inglés y español? La página de Hialeah Gardens y `llms.txt` lo dicen.
+- [ ] ¿Tienen seguro (insured) o bond, y verificación de antecedentes? Si es sí, se agrega en todo el sitio: es lo que más repiten los competidores.
+- [ ] Calificación y reseñas de Thumbtack (texto, nombre y fecha) para mostrarlas. El perfil ya está enlazado en el pie y en el schema (`sameAs`).
+- [ ] ¿Mostrar rangos de precio de referencia de terceros (Angi, HomeAdvisor) en una guía de costos? Hoy no hay ningún precio.
+
+**SEO: siguiente fase**
+
+- [ ] Páginas servicio + ciudad solo para las combinaciones con búsquedas reales (ej. limpieza recurrente en Brickell, Airbnb en Miami Beach).
+- [ ] Guías locales (temporada de lluvias, humedad y moho, preparar la casa para huracanes, casas de temporada) enlazadas desde los servicios.
+
 **Después de publicar**
 
 - [ ] Alta en Google Search Console y envío de `sitemap-index.xml`.

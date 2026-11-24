@@ -38,7 +38,7 @@ export const services: Service[] = [
       en: 'Weekly, biweekly or every 3 weeks. The same team, the same care, a lower price per visit. Get your free quote.',
       es: 'Semanal, cada 2 o cada 3 semanas. El mismo equipo, el mismo cuidado y menos costo por visita. Pide tu cotización gratis.',
     },
-    h1: { en: 'Weekly and biweekly house cleaning', es: 'Limpieza de casas semanal y quincenal' },
+    h1: { en: 'Weekly and biweekly house cleaning in Miami', es: 'Limpieza de casas semanal y quincenal en Miami' },
     intro: {
       en: 'Stop catching up. We come on a set schedule. Your home stays clean between visits.',
       es: 'Deja de ponerte al día. Vamos en un horario fijo. Tu casa se mantiene limpia entre visitas.',
@@ -80,7 +80,7 @@ export const services: Service[] = [
       en: 'A full reset for homes that need more than a regular clean. Kitchen, bathrooms, baseboards and add-ons. Get your free quote.',
       es: 'Un reinicio total para casas que necesitan más que una limpieza regular. Cocina, baños, rodapiés y extras. Pide tu cotización gratis.',
     },
-    h1: { en: 'Deep house cleaning', es: 'Limpieza profunda de casas' },
+    h1: { en: 'Deep house cleaning in Miami', es: 'Limpieza profunda de casas en Miami' },
     intro: {
       en: 'First clean or long overdue? We take our time on the build-up. Then a weekly plan keeps it that way.',
       es: '¿Primera limpieza o hace mucho que no se hace? Le dedicamos tiempo a lo acumulado. Luego, un plan semanal lo mantiene así.',
@@ -122,7 +122,7 @@ export const services: Service[] = [
       en: 'Move in or move out with the place spotless. For renters, owners and realtors in South Florida. Get your free quote.',
       es: 'Entra o sal con el lugar impecable. Para inquilinos, dueños y realtors en el sur de Florida. Pide tu cotización gratis.',
     },
-    h1: { en: 'Move in and move out cleaning', es: 'Limpieza de mudanza: entrada y salida' },
+    h1: { en: 'Move in and move out cleaning in Miami', es: 'Limpieza de mudanza en Miami: entrada y salida' },
     intro: {
       en: 'Leave it clean. Or walk into clean. We handle what the boxes were hiding.',
       es: 'Entrégala limpia. O entra a un lugar limpio. Nos encargamos de lo que las cajas escondían.',
@@ -163,7 +163,7 @@ export const services: Service[] = [
       en: 'Vacation rental cleaning for hosts in Miami Beach, Fort Lauderdale and Hollywood. Set a schedule. Keep guests happy. Get your free quote.',
       es: 'Limpieza de rentas vacacionales para anfitriones en Miami Beach, Fort Lauderdale y Hollywood. Agenda fija, huéspedes felices. Pide tu cotización gratis.',
     },
-    h1: { en: 'Airbnb and vacation rental cleaning', es: 'Limpieza de Airbnb y rentas vacacionales' },
+    h1: { en: 'Airbnb and vacation rental cleaning in Miami', es: 'Limpieza de Airbnb y rentas vacacionales en Miami' },
     intro: {
       en: 'Guests notice everything. We leave your rental ready for the next check-in.',
       es: 'Los huéspedes lo notan todo. Dejamos tu renta lista para el próximo check-in.',
@@ -204,7 +204,7 @@ export const services: Service[] = [
       en: 'Office cleaning on a weekly or biweekly schedule. Desks, bathrooms, kitchens and floors for small businesses in South Florida.',
       es: 'Limpieza de oficinas semanal o quincenal. Escritorios, baños, cocinas y pisos para pequeños negocios en el sur de Florida.',
     },
-    h1: { en: 'Office cleaning for small businesses', es: 'Limpieza de oficinas para pequeños negocios' },
+    h1: { en: 'Office cleaning for small businesses in Miami', es: 'Limpieza de oficinas para pequeños negocios en Miami' },
     intro: {
       en: 'Clean space. Better first impression. Set it once and forget it.',
       es: 'Espacio limpio. Mejor primera impresión. Lo programas una vez y te olvidas.',
@@ -245,7 +245,7 @@ export const services: Service[] = [
       en: 'Cleaning for realtors and property managers. Listings ready for photos, showings and closing day across South Florida.',
       es: 'Limpieza para realtors y administradores. Propiedades listas para fotos, visitas y cierre en todo el sur de Florida.',
     },
-    h1: { en: 'Cleaning for realtors and property managers', es: 'Limpieza para realtors y administradores de propiedades' },
+    h1: { en: 'Cleaning for realtors and property managers in Miami', es: 'Limpieza para realtors y administradores de propiedades en Miami' },
     intro: {
       en: 'Clean sells. Have the listing ready before the photographer and the first showing.',
       es: 'Lo limpio vende. Ten la propiedad lista antes del fotógrafo y de la primera visita.',
@@ -286,7 +286,7 @@ export const services: Service[] = [
       en: 'Remodel finished? We clear the fine dust from surfaces, floors, cabinets and bathrooms so you can finally move back in.',
       es: '¿Terminó la remodelación? Quitamos el polvo fino de superficies, pisos, gabinetes y baños para que por fin puedas volver.',
     },
-    h1: { en: 'Post-construction cleaning', es: 'Limpieza post-construcción' },
+    h1: { en: 'Post-construction cleaning in Miami', es: 'Limpieza post-construcción en Miami' },
     intro: {
       en: 'The crew left. The dust stayed. We finish the job.',
       es: 'Los obreros se fueron. El polvo se quedó. Nosotros terminamos el trabajo.',
@@ -327,7 +327,7 @@ export const services: Service[] = [
       en: 'Wash, dry and organize, right at your home. Add laundry to any cleaning in South Florida.',
       es: 'Lavar, secar y organizar, en tu propia casa. Suma lavandería a cualquier limpieza en el sur de Florida.',
     },
-    h1: { en: 'In-home laundry service', es: 'Lavandería a domicilio' },
+    h1: { en: 'In-home laundry service in Miami', es: 'Lavandería a domicilio en Miami' },
     intro: {
       en: 'No pickup. No drop-off. Your laundry stays home and comes out folded.',
       es: 'Sin recoger ni llevar. Tu ropa no sale de casa y queda organizada.',
@@ -362,7 +362,7 @@ export const services: Service[] = [
       en: 'Oven, windows, cabinets, ceiling lights, fridge and carpets. Add any detail to your cleaning in South Florida. Get your free quote.',
       es: 'Horno, ventanas, gabinetes, lámparas, refrigerador y alfombras. Suma cualquier detalle a tu limpieza. Pide tu cotización gratis.',
     },
-    h1: { en: 'Windows, carpets, appliances and more', es: 'Ventanas, alfombras, electrodomésticos y más' },
+    h1: { en: 'Window, carpet and appliance cleaning in Miami', es: 'Limpieza de ventanas, alfombras y electrodomésticos en Miami' },
     intro: {
       en: 'Add just what you need. No surprises.',
       es: 'Suma solo lo que necesitas. Sin sorpresas.',

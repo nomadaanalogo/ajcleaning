@@ -10,7 +10,8 @@ export const site = {
   phone: '+13056804609',
   phoneDisplay: '(305) 680-4609',
   email: 'ajcleaninghome@gmail.com',
-  social: { instagram: '', facebook: '' },
+  // Perfiles del negocio en otros sitios: van en el schema (sameAs) y en el pie.
+  social: { instagram: '', facebook: '', thumbtack: 'https://www.thumbtack.com/fl/miami/house-cleaning/aj-cleaning-home/service/581534115114614792' },
   yearsInBusiness: 2,
   teamSize: 2,
   hoursSchema: 'Mo-Fr 08:00-17:00',

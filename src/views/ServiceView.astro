@@ -11,6 +11,7 @@ import { serviceUrl, services, type Service } from '../data/services';
 import { areas, areaUrl } from '../data/areas';
 import { rooms } from '../data/rooms';
 import { faqSchema } from '../data/faq';
+import { serviceExtras, sharedServiceFaq } from '../data/serviceExtras';
 import { breadcrumbs, serviceSchema } from '../lib/schema';
 import { ui, routes, type Lang } from '../data/i18n';
 interface Props { lang: Lang; service: Service }
@@ -24,6 +25,21 @@ const crumbs = [
   { name: s.name[lang], href: url },
 ];
 const related = services.filter((x) => x.id !== s.id).slice(0, 4);
+const extra = serviceExtras[s.id];
+// Preguntas propias + las que casi todos los competidores responden (sin repetir las que el servicio ya trae).
+const skipShared: Record<string, number[]> = { office: [1], realtor: [0] };
+const faqItems = [...s.faq, ...(extra?.faq ?? []), ...sharedServiceFaq.filter((_, i) => !(skipShared[s.id] ?? []).includes(i))];
+const steps = es
+  ? [
+      { t: 'Pide tu cotización', d: 'Cuéntanos de tu propiedad en dos minutos.' },
+      { t: 'Recibe tu precio', d: 'Te lo enviamos. Con el 25% apartas tu cupo.' },
+      { t: 'Vuelve a casa limpia', d: s.id === 'recurring' ? 'Vamos el mismo día, cada semana o cada dos.' : 'Llegamos el día acordado y lo dejamos listo.' },
+    ]
+  : [
+      { t: 'Request your quote', d: 'Tell us about your property in two minutes.' },
+      { t: 'Get your price', d: 'We send it to you. A 25% deposit holds your spot.' },
+      { t: 'Come home to clean', d: s.id === 'recurring' ? 'We come on the same day, every week or two.' : 'We arrive on the agreed day and leave it ready.' },
+    ];
 ---
 <Base
   lang={lang}
@@ -33,7 +49,7 @@ const related = services.filter((x) => x.id !== s.id).slice(0, 4);
   jsonLd={[
     breadcrumbs(Astro.site, crumbs),
     serviceSchema(Astro.site, { name: s.h1[lang], description: s.description[lang], href: url, areaServed: areas.map((a) => `${a.name}, FL`) }),
-    faqSchema(s.faq, lang),
+    faqSchema(faqItems, lang),
   ]}
 >
   <section class="page-hero">
@@ -59,6 +75,30 @@ const related = services.filter((x) => x.id !== s.id).slice(0, 4);
     </div>
   </section>
 
+  <section class="section how">
+    <div class="wrap">
+      <h2 class="h2">{es ? 'Cómo funciona' : 'How it works'}</h2>
+      <ol class="steps">
+        {steps.map((st) => <li data-up><b>{st.t}</b><span>{st.d}</span></li>)}
+      </ol>
+    </div>
+  </section>
+
+  {extra && (
+    <section class="section fit">
+      <div class="wrap fit-grid">
+        <div>
+          <h2 class="h3">{es ? 'Ideal para' : 'Who it’s for'}</h2>
+          <ul class="ticks">{extra.bestFor.map((b) => <li><Icon name="check" /> {b[lang]}</li>)}</ul>
+        </div>
+        <div>
+          <h2 class="h3">{es ? `${s.name.es} en el sur de Florida` : `${s.name.en} in South Florida`}</h2>
+          <ul class="ticks">{extra.local.map((b) => <li><Icon name="sparkle" /> {b[lang]}</li>)}</ul>
+        </div>
+      </div>
+    </section>
+  )}
+
   {s.showRooms && (
     <section class="checklist">
       <div class="wrap">
@@ -79,7 +119,7 @@ const related = services.filter((x) => x.id !== s.id).slice(0, 4);
 
   <div class="wrap"><PlanBand lang={lang} /></div>
 
-  <Faq lang={lang} items={s.faq} />
+  <Faq lang={lang} items={faqItems} />
 
   <section class="section more">
     <div class="wrap">
@@ -102,6 +142,19 @@ const related = services.filter((x) => x.id !== s.id).slice(0, 4);
   .points ul { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 40px; margin-top: 28px; max-width: 900px; }
   .points li { display: flex; align-items: center; gap: 12px; font-size: 1.15rem; }
   .points li :global(svg) { width: 28px; height: 28px; padding: 5px; flex: none; border-radius: 50%; background: var(--blush-200); color: var(--blush-900); stroke-width: 2.4; }
+  .how { padding-top: 0; }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 26px; counter-reset: st; }
+  .steps li { position: relative; display: grid; gap: 6px; padding: 24px 22px 22px 70px; background: var(--blush-50); border-radius: 20px; counter-increment: st; }
+  .steps li::before { content: counter(st); position: absolute; left: 22px; top: 22px; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--blush-700); color: #fff; font-weight: 700; }
+  .steps b { font-size: 1.12rem; }
+  .steps span { color: var(--ink-soft); line-height: 1.4; }
+  .fit { padding-top: 0; }
+  .fit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 4vw, 56px); }
+  .fit .h3 { font-family: var(--display); font-weight: 600; font-size: clamp(1.7rem, 3vw, 2.3rem); line-height: 1.05; }
+  .ticks { display: grid; gap: 10px; margin-top: 18px; }
+  .ticks li { display: flex; gap: 12px; align-items: flex-start; line-height: 1.4; }
+  .ticks li :global(svg) { width: 24px; height: 24px; padding: 4px; flex: none; border-radius: 50%; background: var(--blush-100); color: var(--blush-700); stroke-width: 2.2; }
+  @media (max-width: 760px) { .steps, .fit-grid { grid-template-columns: 1fr; } }
   .checklist { padding-bottom: clamp(64px, 9vw, 110px); }
   .check-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 26px; }
   .check-grid article { padding: 22px; background: var(--cream-2); border-radius: 20px; }

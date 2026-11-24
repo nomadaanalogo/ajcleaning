@@ -12,7 +12,7 @@ const es = lang === 'es';
   <div class="rail-pin" data-rail-pin>
     <div class="wrap rail-head">
       <div>
-        <p class="kicker"><Icon name="star" /> {ui.nav.services[lang]}</p>
+        <p class="kicker"><Icon name="star" /> {lang === 'es' ? 'Servicios de limpieza en Miami y Florida' : 'Cleaning services in Miami & Florida'}</p>
         <h2 class="h2">{es ? 'Un equipo. Todo limpio.' : 'One team. All clean.'}</h2>
       </div>
       <a class="all" href={routes.services[lang]}>{ui.common.allServices[lang]} <Icon name="arrow" /></a>

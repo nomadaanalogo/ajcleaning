@@ -9,6 +9,7 @@ import { areaById, areaUrl, type Area } from '../data/areas';
 import { services, serviceUrl } from '../data/services';
 import { faqSchema, type Faq as FaqItem } from '../data/faq';
 import { breadcrumbs, serviceSchema } from '../lib/schema';
+import { areaExtras } from '../data/areaExtras';
 import { ui, routes, type Lang } from '../data/i18n';
 interface Props { lang: Lang; area: Area }
 const { lang, area: a } = Astro.props;
@@ -20,7 +21,9 @@ const crumbs = [
   { name: ui.nav.areas[lang], href: routes.areas[lang] },
   { name: a.name, href: url },
 ];
+const x = areaExtras[a.id];
 const faq: FaqItem[] = [
+  ...(x?.faq ?? []),
   {
     q: { en: `How much is house cleaning in ${a.name}?`, es: `¿Cuánto cuesta limpiar una casa en ${a.name}?` },
     a: {
@@ -48,10 +51,10 @@ const featured = services.filter((s) => ['recurring', 'deep', 'move', 'airbnb', 
 <Base
   lang={lang}
   alt={areaUrl(a, other)}
-  title={es ? `Limpieza de casas en ${a.name}, FL | AJ Cleaning Home` : `House Cleaning in ${a.name}, FL | AJ Cleaning Home`}
+  title={es ? `Limpieza de casas en ${a.name}, FL | AJ Cleaning Home` : `House Cleaning & Maid Service in ${a.name}, FL | AJ Cleaning Home`}
   description={es
-    ? `Limpieza de casas, Airbnb y oficinas en ${a.name}, Florida. Planes semanales y quincenales. Pide tu cotización gratis.`
-    : `House, Airbnb and office cleaning in ${a.name}, Florida. Weekly and biweekly plans. Get your free quote.`}
+    ? `Limpieza de casas semanal, cada 2 semanas o de una vez en ${a.name}${x ? ` (${x.hoods.slice(0, 2).join(', ')})` : ''}. Casas, condos, Airbnb y oficinas. Cotización gratis.`
+    : `Weekly, biweekly or one-time house cleaning in ${a.name}${x ? ` (${x.hoods.slice(0, 2).join(', ')})` : ''}. Homes, condos, Airbnbs and offices. Free quote.`}
   jsonLd={[
     breadcrumbs(Astro.site, crumbs),
     serviceSchema(Astro.site, { name: es ? `Limpieza de casas en ${a.name}` : `House cleaning in ${a.name}`, description: a.intro[lang], href: url, areaServed: [`${a.name}, FL`] }),
@@ -61,7 +64,7 @@ const featured = services.filter((s) => ['recurring', 'deep', 'move', 'airbnb', 
   <section class="page-hero">
     <div class="wrap">
       <Crumbs label="Breadcrumb" items={[{ name: crumbs[0].name, href: crumbs[0].href }, { name: crumbs[1].name, href: crumbs[1].href }, { name: a.name }]} />
-      <h1>{es ? `Limpieza de casas en ${a.name}` : `House cleaning in ${a.name}`}</h1>
+      <h1>{es ? `Limpieza de casas en ${a.name}, FL` : `House cleaning in ${a.name}, FL`}</h1>
       <p class="lead">{a.intro[lang]}</p>
       <div class="cta-row">
         <a class="btn btn--primary" href="#quote" data-track="cta_click">{ui.common.getQuote[lang]} <Icon name="arrow" /></a>
@@ -77,6 +80,22 @@ const featured = services.filter((s) => ['recurring', 'deep', 'move', 'airbnb', 
       </ul>
     </div>
   </section>
+
+  {x && (
+    <section class="section local">
+      <div class="wrap local-grid">
+        <div>
+          <h2 class="h2">{es ? `Limpieza recurrente en ${a.name}` : `Recurring cleaning in ${a.name}`}</h2>
+          <p class="local-text">{x.local[lang]}</p>
+        </div>
+        <dl class="facts">
+          <div><dt>{es ? 'Barrios y zonas' : 'Neighborhoods'}</dt><dd>{x.hoods.join(' · ')}</dd></div>
+          <div><dt>{es ? 'Códigos postales' : 'ZIP codes'}</dt><dd>{x.zips.join(', ')}</dd></div>
+          <div><dt>{es ? 'Condado' : 'County'}</dt><dd>{a.county}</dd></div>
+        </dl>
+      </div>
+    </section>
+  )}
 
   <QuoteWizard lang={lang} preset={{ city: a.id }} title={es ? `Tu cotización en ${a.name}` : `Your quote in ${a.name}`} />
 
@@ -107,6 +126,13 @@ const featured = services.filter((s) => ['recurring', 'deep', 'move', 'airbnb', 
   .notes ul { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 28px; }
   .notes li { display: flex; gap: 12px; align-items: center; padding: 22px; background: var(--blush-50); border-radius: 20px; font-weight: 600; font-size: 1.08rem; line-height: 1.3; }
   .notes li :global(svg) { width: 26px; height: 26px; flex: none; color: var(--blush-700); }
+  .local { padding-top: 0; }
+  .local-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: clamp(20px, 4vw, 56px); align-items: start; }
+  .local-text { margin-top: 16px; font-size: 1.12rem; line-height: 1.6; color: var(--ink-soft); max-width: 60ch; }
+  .facts { display: grid; gap: 14px; padding: 24px; background: var(--cream-2); border-radius: 22px; }
+  .facts dt { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blush-700); }
+  .facts dd { margin: 4px 0 0; line-height: 1.45; }
+  @media (max-width: 760px) { .local-grid { grid-template-columns: 1fr; } }
   .services { padding-bottom: clamp(48px, 7vw, 88px); }
   .services h2, .near h2 { margin-bottom: 22px; font-size: clamp(2rem, 4vw, 3.2rem); }
   .near { background: var(--cream-2); }

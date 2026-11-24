@@ -15,7 +15,7 @@ const es = lang === 'es';
 <Base
   lang={lang}
   alt={routes.services[es ? 'en' : 'es']}
-  title={es ? 'Servicios de limpieza en el sur de Florida | AJ Cleaning Home' : 'Cleaning Services in South Florida | AJ Cleaning Home'}
+  title={es ? 'Servicios de limpieza de casas en Miami y Florida | AJ Cleaning Home' : 'House Cleaning Services in Miami & Florida | AJ Cleaning Home'}
   description={es
     ? 'Limpieza recurrente, profunda, de mudanza, Airbnb, oficinas, realtors, post-construcción y lavandería a domicilio en el sur de Florida.'
     : 'Recurring, deep, move-out, Airbnb, office, realtor and post-construction cleaning, plus in-home laundry, across South Florida.'}
@@ -24,7 +24,7 @@ const es = lang === 'es';
   <section class="page-hero">
     <div class="wrap">
       <Crumbs label="Breadcrumb" items={[{ name: ui.nav.home[lang], href: routes.home[lang] }, { name: ui.nav.services[lang] }]} />
-      <h1>{es ? 'Servicios de limpieza' : 'Cleaning services'}</h1>
+      <h1>{es ? 'Servicios de limpieza en Miami y Florida' : 'Cleaning services in Miami & Florida'}</h1>
       <p class="lead">{es ? 'Un solo equipo para tu casa, tu renta o tu oficina.' : 'One team for your home, your rental or your office.'}</p>
       <a class="btn btn--primary" href={quoteHref(lang)} data-track="cta_click">{ui.common.getQuote[lang]} <Icon name="arrow" /></a>
     </div>

@@ -18,7 +18,7 @@ const row = [...names, ...names].join(' · ');
   )}
   <div class="wrap grid">
     <div>
-      <p class="kicker"><Icon name="star" /> {ui.nav.areas[lang]}</p>
+      <p class="kicker"><Icon name="star" /> {lang === 'es' ? 'Zonas donde limpiamos en Florida' : 'Areas we serve in Florida'}</p>
       <h2 class="h2">{es ? 'Vamos a donde estás.' : 'We come to you.'}</h2>
       <p class="lead">{es ? 'Sur de Florida y toda la Florida. ¿No ves tu zona? Pregúntanos.' : 'South Florida and all of Florida. Don’t see your area? Just ask.'}</p>
       <ul class="cities" data-cities>
