@@ -7,7 +7,7 @@
  */
 import Icon from './Icon.astro';
 import { ui, routes, type Lang } from '../data/i18n';
-import { whatsappUrl } from '../data/site';
+import { whatsappUrl, FORM_ENDPOINT } from '../data/site';
 import { areas } from '../data/areas';
 import type { IconName } from '../data/icons';
 
@@ -72,7 +72,7 @@ const sqft = es ? 'pies²' : 'sq ft';
 
 /* La hoja de seguimiento siempre queda en español, sin importar el idioma del visitante. */
 const config = {
-  endpoint: import.meta.env.PUBLIC_FORM_ENDPOINT ?? '',
+  endpoint: import.meta.env.PUBLIC_FORM_ENDPOINT || FORM_ENDPOINT,
   lang,
   zona,
   whatsappBase: whatsappUrl(''),

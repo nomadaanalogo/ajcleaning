@@ -1,4 +1,7 @@
 /** Datos del negocio. Lo que está vacío no se publica en la página ni en el schema. */
+/** URL /exec del Apps Script instalado en la cuenta de AJ. PUBLIC_FORM_ENDPOINT la reemplaza si está definida. */
+export const FORM_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx_Y2RBnWmf1KJgIuNn08P-zUaQn91v0q319a55bRi1rKWU5X01YUGXC1Z5AiC7vWmB/exec';
+
 export const site = {
   name: 'AJ Cleaning Home',
   // Número con código de país, solo dígitos. El cliente indicó que WhatsApp y llamadas usan el mismo número.

@@ -31,7 +31,7 @@ Sitio en [Astro](https://astro.build), en inglés con versión en español en `/
 Copie `.env.example` a `.env`:
 
 - `PUBLIC_GA_ID`: ID de Google Analytics 4. Registra `generate_lead`, `whatsapp_click` y `cta_click`.
-- `PUBLIC_FORM_ENDPOINT`: URL `/exec` de Apps Script. Si está vacía, el formulario no envía y ofrece WhatsApp.
+- `PUBLIC_FORM_ENDPOINT`: URL `/exec` de Apps Script. Opcional: por defecto usa la instalada en `src/data/site.ts` (`FORM_ENDPOINT`).
 
 ## Pendientes antes de publicar
 
@@ -39,7 +39,7 @@ Copie `.env.example` a `.env`:
 
 - [ ] Confirmar que el (305) 680-4609 tiene WhatsApp. Está puesto para llamadas y WhatsApp en `src/data/site.ts`.
 - [ ] Dominio real en `astro.config.mjs` y `public/robots.txt`. El actual es un supuesto.
-- [ ] Instalar la hoja de Drive con la cuenta de Google de AJ (`apps-script/README.md`) y poner la URL en `PUBLIC_FORM_ENDPOINT`. Sin esto, las solicitudes no se guardan.
+- [x] Hoja de Drive instalada en la cuenta de AJ y conectada (`FORM_ENDPOINT` en `src/data/site.ts`).
 - [ ] Logo y dominio en el correo al cliente: `LOGO_URL` y `SITE_URL` en `apps-script/Code.gs`, cuando el sitio esté publicado. Los avisos ya van a ajcleaninghome@gmail.com.
 - [ ] Revisión de abogado de los términos y condiciones.
 - [ ] Que el negocio confirme los plazos que fijan los términos: daños avisados dentro de 48 horas, cotizaciones válidas 30 días y devolución de la visita si AJ reprograma y el cliente no acepta la nueva fecha.
